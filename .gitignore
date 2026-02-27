@@ -78,3 +78,6 @@ portal-estudos-client/.env.production
 *.key
 *.cert
 *.crt
+
+# Local Netlify folder
+.netlify

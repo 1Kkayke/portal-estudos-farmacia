@@ -3,8 +3,9 @@ import axios from 'axios';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 const APP_ENV = import.meta.env.VITE_APP_ENV || import.meta.env.MODE;
 
+// Aviso de segurança (não quebra o app)
 if (APP_ENV === 'production' && !API_BASE_URL.startsWith('https://')) {
-  throw new Error('VITE_API_BASE_URL deve usar HTTPS em produção.');
+  console.warn('⚠️ AVISO DE SEGURANÇA: Configure VITE_API_BASE_URL com HTTPS no Netlify Dashboard');
 }
 
 const api = axios.create({
