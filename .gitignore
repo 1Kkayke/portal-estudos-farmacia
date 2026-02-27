@@ -61,7 +61,20 @@ Thumbs.db
 # Migrations (opcional - descomente se não quiser commitar migrations)
 # **/Migrations/
 
-# Environment
+# Environment - CRÍTICO: Nunca commitar!
 .env
 .env.local
 .env.*.local
+.env.production
+PortalEstudos.API/.env
+PortalEstudos.API/.env.local
+PortalEstudos.API/.env.production
+portal-estudos-client/.env
+portal-estudos-client/.env.local
+portal-estudos-client/.env.production
+
+# Secrets
+*.pem
+*.key
+*.cert
+*.crt
