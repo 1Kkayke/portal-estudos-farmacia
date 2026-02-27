@@ -108,41 +108,73 @@ public sealed class NewsFeedService
             // double-check
             if (_cache is not null && DateTime.UtcNow - _lastFetch < CacheTtl)
                 return _cache;
+            try
+            {
+                var buildTask = BuildArticlesAsync();
+                var completedTask = await Task.WhenAny(buildTask, Task.Delay(TimeSpan.FromSeconds(8)));
 
-            var articles = new List<BlogArticle>();
+                if (completedTask != buildTask)
+                {
+                    _logger.LogWarning("Blog feed timeout on cold fetch. Returning fallback payload.");
+                    return GetFallbackArticles();
+                }
 
-            // 1) Fetch from PubMed + RSS in parallel
-            var tasks = new List<Task<List<BlogArticle>>>();
-            foreach (var (query, cat) in PubMedQueries)
-                tasks.Add(FetchPubMedAsync(query, cat));
-            foreach (var (url, src, cat) in RssFeeds)
-                tasks.Add(FetchRssAsync(url, src, cat));
+                _cache = await buildTask;
+                _lastFetch = DateTime.UtcNow;
 
-            var results = await Task.WhenAll(tasks);
-            foreach (var r in results) articles.AddRange(r);
+                _logger.LogInformation("Blog: {Total} articles loaded ({External} external, {Curated} curated)",
+                    _cache.Count, _cache.Count(a => a.IsExterno), _cache.Count(a => !a.IsExterno));
 
-            // 2) Translate external articles to PT-BR
-            await TranslateArticlesAsync(articles);
-
-            // 3) Always include curated articles (already in PT-BR)
-            articles.AddRange(CuratedArticlesProvider.GetArticles());
-
-            // 4) Sort by date descending, limit to 100
-            _cache = articles
-                .OrderByDescending(a => a.DataPublicacao)
-                .Take(100)
-                .ToList();
-            _lastFetch = DateTime.UtcNow;
-
-            _logger.LogInformation("Blog: {Total} articles loaded ({External} external, {Curated} curated)",
-                _cache.Count, _cache.Count(a => a.IsExterno), _cache.Count(a => !a.IsExterno));
-
-            return _cache;
+                return _cache;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Blog feed failed. Returning fallback payload.");
+                return GetFallbackArticles();
+            }
         }
         finally
         {
             _lock.Release();
         }
+    }
+
+    private async Task<List<BlogArticle>> BuildArticlesAsync()
+    {
+        var articles = new List<BlogArticle>();
+
+        // 1) Fetch from PubMed + RSS in parallel
+        var tasks = new List<Task<List<BlogArticle>>>();
+        foreach (var (query, cat) in PubMedQueries)
+            tasks.Add(FetchPubMedAsync(query, cat));
+        foreach (var (url, src, cat) in RssFeeds)
+            tasks.Add(FetchRssAsync(url, src, cat));
+
+        var results = await Task.WhenAll(tasks);
+        foreach (var r in results) articles.AddRange(r);
+
+        // 2) Translate external articles to PT-BR
+        await TranslateArticlesAsync(articles);
+
+        // 3) Always include curated articles (already in PT-BR)
+        articles.AddRange(CuratedArticlesProvider.GetArticles());
+
+        // 4) Sort by date descending, limit to 100
+        return articles
+            .OrderByDescending(a => a.DataPublicacao)
+            .Take(100)
+            .ToList();
+    }
+
+    private List<BlogArticle> GetFallbackArticles()
+    {
+        if (_cache is not null && _cache.Count > 0)
+            return _cache;
+
+        return CuratedArticlesProvider.GetArticles()
+            .OrderByDescending(a => a.DataPublicacao)
+            .Take(100)
+            .ToList();
     }
 
     public async Task<BlogArticle?> GetArticleByIdAsync(string id)

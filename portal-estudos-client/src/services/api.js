@@ -2,6 +2,11 @@ import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 const APP_ENV = import.meta.env.VITE_APP_ENV || import.meta.env.MODE;
+const normalizedBaseUrl = API_BASE_URL.replace(/\/+$/, '');
+
+export const API_ORIGIN = normalizedBaseUrl.endsWith('/api')
+  ? normalizedBaseUrl.slice(0, -4)
+  : normalizedBaseUrl;
 
 // Aviso de segurança (não quebra o app)
 if (APP_ENV === 'production' && !API_BASE_URL.startsWith('https://')) {
@@ -10,7 +15,7 @@ if (APP_ENV === 'production' && !API_BASE_URL.startsWith('https://')) {
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
+  timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
     'X-Requested-With': 'XMLHttpRequest',

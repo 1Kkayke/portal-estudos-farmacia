@@ -2,12 +2,19 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
+import { API_ORIGIN } from '../services/api';
 import {
   Settings, User, Mail, Lock, Camera, ArrowLeft, Save,
   Eye, EyeOff, AlertCircle, CheckCircle, Phone, Calendar,
 } from 'lucide-react';
 
 export default function ConfigPage() {
+    const getProfileImageUrl = (url) => {
+      if (!url) return null;
+      if (url.startsWith('http://') || url.startsWith('https://')) return url;
+      return `${API_ORIGIN}${url}`;
+    };
+
   const { user, updateUser } = useAuth();
   const navigate = useNavigate();
 
@@ -19,7 +26,7 @@ export default function ConfigPage() {
   const [bio, setBio] = useState(user?.bio || '');
   const [fotoPerfil, setFotoPerfil] = useState(null);
   const [fotoPreview, setFotoPreview] = useState(
-    user?.fotoPerfilUrl ? `http://localhost:5000${user.fotoPerfilUrl}` : null
+    getProfileImageUrl(user?.fotoPerfilUrl)
   );
 
   // Estados para senha

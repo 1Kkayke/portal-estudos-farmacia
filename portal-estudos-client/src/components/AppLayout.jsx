@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { API_ORIGIN } from '../services/api';
 import {
   GraduationCap, LayoutDashboard, BookOpen, FileText,
   Timer, Layers, Link2, Newspaper, LogOut, Menu, X,
@@ -43,6 +44,12 @@ export default function AppLayout({ children }) {
   const isActive = (path) => {
     if (path === '/') return location.pathname === '/';
     return location.pathname.startsWith(path);
+  };
+
+  const getProfileImageUrl = (url) => {
+    if (!url) return null;
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    return `${API_ORIGIN}${url}`;
   };
 
   return (
@@ -111,7 +118,7 @@ export default function AppLayout({ children }) {
           <div className="flex items-center gap-2 lg:gap-3 p-2.5 lg:p-3 rounded-xl bg-slate-800/50">
             {user?.fotoPerfilUrl ? (
               <img
-                src={`http://localhost:5000${user.fotoPerfilUrl}`}
+                src={getProfileImageUrl(user.fotoPerfilUrl)}
                 alt="Foto de perfil"
                 className="w-8 h-8 lg:w-9 lg:h-9 rounded-lg object-cover shrink-0"
               />

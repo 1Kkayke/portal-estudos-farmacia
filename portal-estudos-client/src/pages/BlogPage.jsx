@@ -39,7 +39,13 @@ export default function BlogPage() {
         ...(catFilter && { categoria: catFilter }),
         ...(search && { search })
       };
-      const res = await api.get('/blog/paginated', { params });
+      let res;
+      try {
+        res = await api.get('/blog/paginated', { params });
+      } catch (firstError) {
+        await new Promise(resolve => setTimeout(resolve, 800));
+        res = await api.get('/blog/paginated', { params });
+      }
       setArticles(res.data.items);
       setTotalPages(res.data.totalPages);
       setPage(pageNum);
@@ -56,7 +62,13 @@ export default function BlogPage() {
 
   const loadCategories = useCallback(async () => {
     try {
-      const res = await api.get('/blog/categories');
+      let res;
+      try {
+        res = await api.get('/blog/categories');
+      } catch (firstError) {
+        await new Promise(resolve => setTimeout(resolve, 800));
+        res = await api.get('/blog/categories');
+      }
       setCategories(res.data || []);
     } catch (e) {
       console.error('Categories load error:', e);
