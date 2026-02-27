@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* ===== Fontes e Reset ===== */
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+
+/* ===== Scrollbar customizada ===== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #1e293b; }
+::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+/* ===== React Quill ===== */
+.ql-toolbar.ql-snow {
+  border-radius: 0.75rem 0.75rem 0 0;
+  border-color: #334155;
+  background-color: #1e293b;
+}
+.ql-toolbar.ql-snow .ql-stroke { stroke: #94a3b8; }
+.ql-toolbar.ql-snow .ql-fill { fill: #94a3b8; }
+.ql-toolbar.ql-snow .ql-picker { color: #94a3b8; }
+.ql-toolbar.ql-snow .ql-picker-options { background-color: #1e293b; border-color: #334155; }
+
+.ql-container.ql-snow {
+  border-radius: 0 0 0.75rem 0.75rem;
+  border-color: #334155;
+  min-height: 220px;
+  font-size: 1rem;
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+.ql-editor { min-height: 220px; }
+.ql-editor.ql-blank::before { color: #64748b; }
+
+/* ===== Conteúdo renderizado de notas ===== */
+.note-content h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; color: #f1f5f9; }
+.note-content h2 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; color: #e2e8f0; }
+.note-content h3 { font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem; color: #cbd5e1; }
+.note-content p { margin-bottom: 0.5rem; color: #cbd5e1; }
+.note-content ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 0.5rem; }
+.note-content ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 0.5rem; }
+.note-content strong { font-weight: 700; color: #f1f5f9; }
+.note-content em { font-style: italic; }
+.note-content blockquote { border-left: 3px solid #6366f1; padding-left: 1rem; color: #94a3b8; margin: 0.5rem 0; }
+.note-content pre { background: #1e293b; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; }
+.note-content code { font-family: 'Fira Code', monospace; font-size: 0.875rem; }
+
+/* ===== Animações ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in, .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.animate-slide-in { animation: slideIn 0.3s ease-out; }
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(99, 102, 241, 0); }
+}
+.animate-pulse-glow { animation: pulse-glow 2s infinite; }
