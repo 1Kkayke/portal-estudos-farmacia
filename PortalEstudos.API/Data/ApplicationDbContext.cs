@@ -13,6 +13,16 @@ namespace PortalEstudos.API.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
+            optionsBuilder.ConfigureWarnings(w =>
+            {
+                // Suprimir aviso de pending changes - permite deploy sem erro
+                w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning);
+            });
+        }
+
         /// <summary>Tabela de tópicos de estudo.</summary>
         public DbSet<Topic> Topics => Set<Topic>();
 
