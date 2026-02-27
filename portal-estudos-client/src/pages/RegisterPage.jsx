@@ -41,7 +41,7 @@ export default function RegisterPage() {
           </div>
           <h2 className="text-4xl font-extrabold text-white mb-4">Junte-se ao PharmStudy</h2>
           <p className="text-lg text-indigo-100 max-w-md leading-relaxed">
-            Milhares de estudantes de Farmácia já organizam seus estudos conosco. Crie sua conta gratuitamente.
+            Venha fazer parte da nova e mais moderna plataforma de estudos de farmacia. Crie sua conta gratuitamente.
           </p>
         </div>
       </div>
