@@ -127,7 +127,9 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+// Não fazer UseHttpsRedirection() em produção (Render já providencia HTTPS via reverse proxy)
+// app.UseHttpsRedirection();
+
 app.UseSecurityHeaders();
 
 // Servir arquivos estáticos (imagens de perfil, etc.)
