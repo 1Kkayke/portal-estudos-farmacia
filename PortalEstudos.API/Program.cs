@@ -17,6 +17,12 @@ var defaultConn = builder.Configuration.GetConnectionString("DefaultConnection")
 var envConn = builder.Configuration["DB_CONNECTION_STRING"];
 var connectionString = string.IsNullOrWhiteSpace(envConn) ? defaultConn : envConn;
 
+if (isProduction && string.IsNullOrWhiteSpace(envConn))
+{
+    var writableDbPath = Path.Combine(Path.GetTempPath(), "PortalEstudos.db");
+    connectionString = $"Data Source={writableDbPath}";
+}
+
 // ===== 1. Banco de Dados (SQLite via EF Core) =====
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
