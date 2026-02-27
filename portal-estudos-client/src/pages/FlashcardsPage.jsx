@@ -75,9 +75,9 @@ export default function FlashcardsPage() {
   // Deck selection
   if (deckIdx === null) {
     return (
-      <div className="p-6 lg:p-8 max-w-4xl mx-auto space-y-6">
+      <div className="p-4 md:p-6 lg:p-8 max-w-4xl mx-auto space-y-4 lg:space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+          <h1 className="text-xl md:text-2xl font-bold text-white flex items-center gap-2 lg:gap-3">
             <RotateCcw className="w-7 h-7 text-indigo-400" /> Flashcards
           </h1>
           <p className="text-slate-400 text-sm mt-1">Escolha um baralho para revisar com repetição ativa.</p>

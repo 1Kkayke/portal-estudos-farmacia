@@ -13,6 +13,8 @@ const diffColor = {
   'Avançado': 'bg-red-500/10 text-red-400 border-red-500/20',
 };
 
+const FALLBACK_DOC = '/docs/templates/cover-1.svg';
+
 export default function DocumentsPage() {
   const { topicId } = useParams();
   const [docs, setDocs] = useState([]);
@@ -20,6 +22,45 @@ export default function DocumentsPage() {
   const [selectedDoc, setSelectedDoc] = useState(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+
+  const apiBase = (api.defaults.baseURL || '').replace(/\/api$/, '');
+  const apiOrigin = apiBase;
+  const resolveDocUrl = (path) => {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    if (path.startsWith('/api/')) return `${apiOrigin}${path}`;
+    if (path.startsWith('/docs/')) return `${apiOrigin}${path}`;
+    return `${apiBase}${path}`;
+  };
+
+  const htmlToText = (html) => {
+    if (!html) return '';
+    try {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      return (doc.body?.textContent || '').replace(/\s+/g, ' ').trim();
+    } catch {
+      return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!selectedDoc?.pdfUrl) return;
+    try {
+      const pdfPath = selectedDoc.pdfUrl.replace(/^\/api/, '');
+      const res = await api.get(pdfPath, { responseType: 'blob' });
+      const fileName = `documento-${selectedDoc.topicId}-${selectedDoc.id}.pdf`;
+      const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Erro ao baixar PDF:', err);
+    }
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -29,8 +70,9 @@ export default function DocumentsPage() {
           api.get('/topics'),
         ]);
         setDocs(docsRes.data);
-        setTopic(topicsRes.data.find(t => t.id === parseInt(topicId)));
-      } catch (err) {
+        setTopic(topicsRes.data.find(t => t.id === parseInt(topicId)));        
+        // Registrar atividade (último acesso)
+        api.post(`/usertopics/activity/${topicId}`).catch(console.error);      } catch (err) {
         console.error(err);
       } finally {
         setLoading(false);
@@ -63,21 +105,50 @@ export default function DocumentsPage() {
 
   // Reading view
   if (selectedDoc) {
+    const youtubeQuery = encodeURIComponent(`${selectedDoc.titulo} ${topic?.nome ?? ''} farmacia aula`);
+    const youtubeEmbed = `https://www.youtube.com/embed?listType=search&list=${youtubeQuery}`;
+    const pdfLink = resolveDocUrl(selectedDoc.pdfUrl || '');
+    const plainContent = htmlToText(selectedDoc.conteudo);
+    const pageSnippets = plainContent.split('. ').filter(Boolean).slice(0, 12);
+    const pageData = [
+      {
+        title: 'Resumo da apostila',
+        body: `${selectedDoc.resumo} ${pageSnippets.slice(0, 2).join('. ')}.`,
+      },
+      {
+        title: 'Conteudo dirigido',
+        body: `${pageSnippets.slice(2, 6).join('. ')}.`,
+      },
+      {
+        title: 'Pontos-chave',
+        body: 'Definicoes essenciais, classificacoes principais, aplicacoes clinicas e revisao para prova.',
+      },
+    ];
+
     return (
-      <div className="p-6 max-w-4xl mx-auto animate-fadeIn">
+      <div className="p-4 md:p-6 max-w-4xl mx-auto animate-fadeIn">
         <button
           onClick={() => setSelectedDoc(null)}
-          className="flex items-center gap-2 text-slate-400 hover:text-white mb-6 transition cursor-pointer"
+          className="flex items-center gap-2 text-slate-400 hover:text-white mb-4 lg:mb-6 transition cursor-pointer active:scale-95"
         >
           <ArrowLeft className="w-4 h-4" /> Voltar aos documentos
         </button>
 
-        <div className="bg-slate-800/50 rounded-2xl border border-slate-700/50 p-8">
-          <div className="flex items-center gap-3 mb-4">
-            <span className={`px-3 py-1 text-xs font-medium rounded-full border ${diffColor[selectedDoc.dificuldade] || diffColor['Intermediário']}`}>
+        <div className="bg-slate-800/50 rounded-xl lg:rounded-2xl border border-slate-700/50 p-4 md:p-6 lg:p-8">
+          <div className="mb-6">
+            <img
+              src={resolveDocUrl(selectedDoc.capaUrl || FALLBACK_DOC)}
+              alt="Capa do documento"
+              className="w-full h-48 md:h-56 object-cover rounded-xl border border-slate-700/50"
+              loading="lazy"
+            />
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 lg:gap-3 mb-3 lg:mb-4">
+            <span className={`px-2.5 lg:px-3 py-0.5 lg:py-1 text-[10px] lg:text-xs font-medium rounded-full border ${diffColor[selectedDoc.dificuldade] || diffColor['Intermediário']}`}>
               {selectedDoc.dificuldade}
             </span>
-            <span className="flex items-center gap-1 text-xs text-slate-500">
+            <span className="flex items-center gap-1 text-[10px] lg:text-xs text-slate-500">
               <Clock className="w-3.5 h-3.5" /> {selectedDoc.leituraMinutos} min
             </span>
           </div>
@@ -85,10 +156,73 @@ export default function DocumentsPage() {
           <h1 className="text-2xl font-bold text-white mb-2">{selectedDoc.titulo}</h1>
           <p className="text-slate-400 text-sm mb-8">{selectedDoc.resumo}</p>
 
+          {pdfLink && (
+            <div className="mb-6">
+              <button
+                onClick={handleDownloadPdf}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm hover:bg-indigo-700 active:bg-indigo-800 transition"
+              >
+                Baixar PDF
+              </button>
+            </div>
+          )}
+
+          {selectedDoc.paginas?.length > 0 && (
+            <div className="mb-8">
+              <h2 className="text-lg font-semibold text-white mb-3">Apostila (paginas)</h2>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {selectedDoc.paginas.map((p, i) => (
+                  <div
+                    key={`${selectedDoc.id}-p-${i}`}
+                    className="relative rounded-xl border border-slate-700/50 bg-slate-900/50 overflow-hidden"
+                  >
+                    <img
+                      src={resolveDocUrl(p)}
+                      alt={`Pagina ${i + 1}`}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-white/85 backdrop-blur-[1px] p-4">
+                      <p className="text-xs text-slate-500">Pagina {i + 1}</p>
+                      <h3 className="text-sm font-semibold text-slate-900 mb-2">
+                        {pageData[i % pageData.length].title}
+                      </h3>
+                      <p className="text-xs text-slate-700 leading-relaxed line-clamp-6">
+                        {pageData[i % pageData.length].body}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div
             className="prose prose-invert prose-indigo max-w-none"
             dangerouslySetInnerHTML={{ __html: selectedDoc.conteudo }}
           />
+        </div>
+
+        <div className="bg-slate-800/40 rounded-xl border border-slate-700/50 p-4 md:p-6 mt-6">
+          <h2 className="text-lg font-semibold text-white mb-3">Videos relacionados</h2>
+          <div className="aspect-video rounded-xl overflow-hidden border border-slate-700/50">
+            <iframe
+              title="Videos relacionados"
+              src={youtubeEmbed}
+              className="w-full h-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+          <a
+            href={`https://www.youtube.com/results?search_query=${youtubeQuery}`}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 text-sm text-indigo-400 hover:text-indigo-300 mt-3"
+          >
+            Ver mais no YouTube
+            <ChevronRight className="w-4 h-4" />
+          </a>
         </div>
 
         {/* Navigation */}
@@ -191,8 +325,16 @@ export default function DocumentsPage() {
             onClick={() => loadDocument(doc.id)}
             className="w-full flex items-center gap-4 p-4 bg-slate-800/50 rounded-xl border border-slate-700/50 hover:border-indigo-500/30 hover:bg-slate-800/80 transition text-left cursor-pointer group"
           >
-            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-indigo-500/10 text-indigo-400 font-bold text-sm shrink-0">
-              {String(idx + 1).padStart(2, '0')}
+            <div className="relative w-16 h-16 rounded-lg overflow-hidden border border-slate-700/50 shrink-0">
+              <img
+                src={resolveDocUrl(doc.capaUrl || FALLBACK_DOC)}
+                alt="Capa"
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+              <div className="absolute bottom-1 right-1 text-[10px] px-1.5 py-0.5 rounded bg-slate-900/80 text-slate-300">
+                {String(idx + 1).padStart(2, '0')}
+              </div>
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="text-white font-medium text-sm group-hover:text-indigo-300 transition truncate">{doc.titulo}</h3>

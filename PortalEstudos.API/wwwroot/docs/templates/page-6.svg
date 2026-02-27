@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1400" viewBox="0 0 1000 1400">
+  <rect width="1000" height="1400" fill="#0f172a"/>
+  <rect x="60" y="60" width="880" height="1280" rx="18" fill="#ffffff"/>
+  <text x="110" y="120" font-family="Arial, Helvetica, sans-serif" font-size="28" fill="#0f172a">Portal Estudos</text>
+  <text x="110" y="180" font-family="Arial, Helvetica, sans-serif" font-size="20" fill="#111827">Mapa conceitual</text>
+
+  <rect x="110" y="230" width="780" height="6" fill="#e5e7eb"/>
+
+  <rect x="360" y="300" width="280" height="70" rx="12" fill="#e0f2fe" stroke="#7dd3fc"/>
+  <text x="395" y="345" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#0c4a6e">Tema central</text>
+
+  <rect x="160" y="430" width="240" height="60" rx="10" fill="#fef9c3" stroke="#fde68a"/>
+  <text x="180" y="468" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#78350f">Subtema A</text>
+
+  <rect x="600" y="430" width="240" height="60" rx="10" fill="#fee2e2" stroke="#fecaca"/>
+  <text x="620" y="468" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#7f1d1d">Subtema B</text>
+
+  <line x1="420" y1="370" x2="280" y2="430" stroke="#94a3b8" stroke-width="3"/>
+  <line x1="580" y1="370" x2="720" y2="430" stroke="#94a3b8" stroke-width="3"/>
+
+  <text x="110" y="620" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#0f172a">Notas de aula</text>
+  <rect x="110" y="645" width="780" height="6" fill="#e5e7eb"/>
+  <rect x="110" y="675" width="760" height="10" fill="#cbd5f5"/>
+  <rect x="110" y="700" width="730" height="10" fill="#cbd5f5"/>
+
+  <text x="110" y="1180" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#94a3b8">Documento academico ilustrativo - Portal Estudos</text>
+</svg>

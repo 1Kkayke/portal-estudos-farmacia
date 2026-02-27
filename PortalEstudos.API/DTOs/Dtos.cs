@@ -24,6 +24,42 @@ namespace PortalEstudos.API.DTOs
         public string Email { get; set; } = string.Empty;
         public string NomeCompleto { get; set; } = string.Empty;
         public DateTime Expiration { get; set; }
+        public string? Telefone { get; set; }
+        public DateTime? DataNascimento { get; set; }
+        public string? Bio { get; set; }
+        public string? FotoPerfilUrl { get; set; }
+    }
+
+    /// <summary>DTO para atualização de perfil.</summary>
+    public class UpdateProfileDto
+    {
+        public string NomeCompleto { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string? Telefone { get; set; }
+        public DateTime? DataNascimento { get; set; }
+        public string? Bio { get; set; }
+        public IFormFile? FotoPerfil { get; set; }
+    }
+
+    /// <summary>DTO para alteração de senha.</summary>
+    public class ChangePasswordDto
+    {
+        public string SenhaAtual { get; set; } = string.Empty;
+        public string NovaSenha { get; set; } = string.Empty;
+    }
+
+    /// <summary>DTO para recuperação de senha.</summary>
+    public class RecoverPasswordDto
+    {
+        public string Email { get; set; } = string.Empty;
+    }
+
+    /// <summary>DTO para redefinição de senha com token.</summary>
+    public class ResetPasswordDto
+    {
+        public string Email { get; set; } = string.Empty;
+        public string Token { get; set; } = string.Empty;
+        public string NovaSenha { get; set; } = string.Empty;
     }
 
     // ---- DTOs de Topic ----
@@ -38,6 +74,31 @@ namespace PortalEstudos.API.DTOs
         public string Icone { get; set; } = string.Empty;
         public string Cor { get; set; } = string.Empty;
         public int TotalNotas { get; set; }
+    }
+
+    /// <summary>DTO para card de tópico com informações de favorito.</summary>
+    public class TopicCardDto
+    {
+        public int Id { get; set; }
+        public string Nome { get; set; } = string.Empty;
+        public string Descricao { get; set; } = string.Empty;
+        public string Categoria { get; set; } = string.Empty;
+        public string Icone { get; set; } = string.Empty;
+        public string Cor { get; set; } = string.Empty;
+        public int TotalNotas { get; set; }
+        public bool IsFavorite { get; set; }
+    }
+
+    /// <summary>DTO para atividade do usuário em um tópico.</summary>
+    public class TopicActivityDto
+    {
+        public int TopicId { get; set; }
+        public string TopicNome { get; set; } = string.Empty;
+        public string TopicCategoria { get; set; } = string.Empty;
+        public string TopicIcone { get; set; } = string.Empty;
+        public string TopicCor { get; set; } = string.Empty;
+        public DateTime UltimoAcesso { get; set; }
+        public int TotalAcessos { get; set; }
     }
 
     // ---- DTOs de Note ----
@@ -81,6 +142,9 @@ namespace PortalEstudos.API.DTOs
         public string Dificuldade { get; set; } = string.Empty;
         public int LeituraMinutos { get; set; }
         public int TopicId { get; set; }
+        public string CapaUrl { get; set; } = string.Empty;
+        public List<string> Paginas { get; set; } = new();
+        public string PdfUrl { get; set; } = string.Empty;
     }
 
     public class DocumentListDto
@@ -91,6 +155,8 @@ namespace PortalEstudos.API.DTOs
         public int Ordem { get; set; }
         public string Dificuldade { get; set; } = string.Empty;
         public int LeituraMinutos { get; set; }
+        public string CapaUrl { get; set; } = string.Empty;
+        public string PdfUrl { get; set; } = string.Empty;
     }
 
     // ---- DTOs de Question ----

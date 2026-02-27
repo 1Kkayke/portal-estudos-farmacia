@@ -21,7 +21,7 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       await register(nome, email, password);
-      navigate('/');
+      navigate('/onboarding');
     } catch (err) {
       const errors = err.response?.data;
       setError(Array.isArray(errors) ? errors.join(' ') : 'Erro ao criar conta.');

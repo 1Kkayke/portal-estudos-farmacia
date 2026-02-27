@@ -66,8 +66,10 @@ public static partial class StudyContentSeeder
     {
         var list = new List<Document>();
         int id = 1;
+        var topics = GetTopics();
         foreach (var (topicId, (docs, _)) in _data.OrderBy(x => x.Key))
         {
+            var topicName = topics.FirstOrDefault(t => t.Id == topicId)?.Nome ?? "";
             int order = 1;
             foreach (var d in docs)
             {
@@ -77,7 +79,7 @@ public static partial class StudyContentSeeder
                     TopicId = topicId,
                     Titulo = d.Titulo,
                     Resumo = d.Resumo,
-                    Conteudo = GenerateDocHtml(topicId, d.Titulo, d.Resumo, order),
+                    Conteudo = GenerateDocHtml(topicId, topicName, d.Titulo, d.Resumo, order),
                     Ordem = order,
                     Dificuldade = d.Dificuldade,
                     LeituraMinutos = d.Minutos,
@@ -160,34 +162,62 @@ public static partial class StudyContentSeeder
     //  HTML CONTENT GENERATOR
     // ═══════════════════════════════════════════════════
 
-    private static string GenerateDocHtml(int topicId, string titulo, string resumo, int idx)
+    private static string GenerateDocHtml(int topicId, string topicName, string titulo, string resumo, int idx)
     {
-        return $@"
+                return $@"
 <h2>{titulo}</h2>
 <p class='lead'>{resumo}</p>
 
-<h3>Introdução</h3>
-<p>Este documento aborda os conceitos fundamentais relacionados a <strong>{titulo.ToLower()}</strong>, um tema essencial para a formação do profissional farmacêutico. O domínio deste conteúdo é frequentemente cobrado em provas de concursos e residências farmacêuticas.</p>
+<h3>Contexto em {topicName}</h3>
+<p>Este documento aborda <strong>{titulo.ToLower()}</strong> no contexto de <strong>{topicName}</strong>, conectando conceitos teoricos essenciais com aplicacoes praticas na rotina farmaceutica. O conteudo foi estruturado no formato de apostila academica, facilitando a leitura dirigida e revisao sistematica.</p>
 
-<h3>Conceitos Fundamentais</h3>
-<p>A compreensão aprofundada deste tema requer o conhecimento de princípios teóricos e sua aplicação na prática farmacêutica. Os principais pontos a serem estudados incluem definições, classificações, mecanismos e aplicações clínicas.</p>
+<h3>Objetivos de aprendizagem</h3>
 <ul>
-<li>Definições e terminologia técnica específica da área</li>
-<li>Classificação e categorização sistemática</li>
-<li>Mecanismos de ação e princípios fundamentais</li>
-<li>Aplicações práticas no contexto farmacêutico</li>
-<li>Correlações clínicas e relevância terapêutica</li>
+<li>Compreender os principios basicos de <strong>{titulo.ToLower()}</strong> dentro da area de {topicName}</li>
+<li>Relacionar conceitos teoricos com a pratica na area de {topicName}</li>
+<li>Aplicar o conteudo em situacoes clinicas e laboratoriais especificas</li>
+<li>Dominar termos tecnicos e definicoes cobrados em avaliacoes</li>
 </ul>
 
-<h3>Aspectos Práticos</h3>
-<p>Na prática profissional, o farmacêutico deve ser capaz de aplicar estes conhecimentos para tomada de decisões clínicas, orientação de pacientes e garantia da qualidade dos serviços prestados.</p>
+<h3>Resumo teorico</h3>
+<p>O tema <strong>{titulo.ToLower()}</strong> e fundamental para a compreensao de {topicName}. Este material sintetiza os principais conceitos, classificacoes e aplicacoes praticas, sendo essencial para a formacao do profissional farmaceutico e frequentemente abordado em disciplinas correlatas e avaliacoes.</p>
 
-<h3>Pontos-Chave para Revisão</h3>
+<h3>Estrutura do conteudo</h3>
+<ol>
+<li><strong>Introducao</strong> e panorama do tema</li>
+<li><strong>Conceitos-chave</strong> e terminologia tecnica</li>
+<li><strong>Classificacoes</strong> e criterios de organizacao</li>
+<li><strong>Aplicacoes</strong> na pratica clinica e laboratorial</li>
+</ol>
+
+<h3>Quadro de referencia</h3>
+<table>
+    <thead>
+        <tr><th>Topico</th><th>Resumo</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>Definicoes</td><td>Termos essenciais e conceito operacional</td></tr>
+        <tr><td>Classificacoes</td><td>Principais grupos e criterios</td></tr>
+        <tr><td>Aplicacoes</td><td>Uso clinico e correlacoes praticas</td></tr>
+    </tbody>
+</table>
+
+<h3>Aplicacoes academicas</h3>
+<p>O aluno deve ser capaz de interpretar o tema em estudos de caso, exercicios de laboratorio e cenarios clinicos simulados. Recomenda-se revisao com questoes e mapas mentais.</p>
+
+<h3>Pontos-chave para revisao</h3>
 <ul>
-<li>Dominar os conceitos teóricos fundamentais</li>
-<li>Compreender as aplicações clínicas e práticas</li>
-<li>Conhecer a legislação e normas relacionadas</li>
-<li>Relacionar com outras disciplinas da formação farmacêutica</li>
+<li>Dominar definicoes e classificacoes</li>
+<li>Relacionar o tema a outras disciplinas</li>
+<li>Identificar aplicacoes clinicas relevantes</li>
+<li>Resolver questoes de prova com base no conteudo</li>
+</ul>
+
+<h3>Leituras recomendadas</h3>
+<ul>
+<li>Diretrizes e protocolos oficiais relacionados ao tema</li>
+<li>Livros base da disciplina e artigos de revisao</li>
+<li>Material complementar disponibilizado pelo docente</li>
 </ul>
 ";
     }

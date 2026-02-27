@@ -1,6 +1,8 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
+import ResetPasswordPage from './pages/ResetPasswordPage'
+import OnboardingPage from './pages/OnboardingPage'
 import DashboardPage from './pages/DashboardPage'
 import DisciplinasPage from './pages/DisciplinasPage'
 import NotesPage from './pages/NotesPage'
@@ -12,6 +14,7 @@ import RecursosPage from './pages/RecursosPage'
 import DocumentsPage from './pages/DocumentsPage'
 import QuestionsPage from './pages/QuestionsPage'
 import ExamPage from './pages/ExamPage'
+import ConfigPage from './pages/ConfigPage'
 import ProtectedRoute from './components/ProtectedRoute'
 import AppLayout from './components/AppLayout'
 
@@ -29,6 +32,8 @@ function App() {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/redefinir-senha" element={<ResetPasswordPage />} />
+      <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
 
       <Route path="/" element={<Protected><DashboardPage /></Protected>} />
       <Route path="/disciplinas" element={<Protected><DisciplinasPage /></Protected>} />
@@ -41,6 +46,7 @@ function App() {
       <Route path="/flashcards" element={<Protected><FlashcardsPage /></Protected>} />
       <Route path="/pomodoro" element={<Protected><PomodoroPage /></Protected>} />
       <Route path="/recursos" element={<Protected><RecursosPage /></Protected>} />
+      <Route path="/config" element={<Protected><ConfigPage /></Protected>} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

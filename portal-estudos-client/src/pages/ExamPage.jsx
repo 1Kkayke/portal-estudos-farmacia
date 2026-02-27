@@ -44,6 +44,9 @@ export default function ExamPage() {
         ]);
         setTopic(topicsRes.data.find(t => t.id === parseInt(topicId)));
         setHistory(historyRes.data);
+        
+        // Registrar atividade (último acesso)
+        api.post(`/usertopics/activity/${topicId}`).catch(console.error);
       } catch (err) {
         console.error(err);
       }

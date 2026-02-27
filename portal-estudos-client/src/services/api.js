@@ -1,32 +1,51 @@
 import axios from 'axios';
 
-/**
- * Instância configurada do Axios.
- * - baseURL aponta para a API ASP.NET Core
- * - Interceptor adiciona automaticamente o token JWT em todas as requisições
- */
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const APP_ENV = import.meta.env.VITE_APP_ENV || import.meta.env.MODE;
+
+if (APP_ENV === 'production' && !API_BASE_URL.startsWith('https://')) {
+  throw new Error('VITE_API_BASE_URL deve usar HTTPS em produção.');
+}
+
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: API_BASE_URL,
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest',
+  },
 });
 
-// Interceptor de requisição: injeta o token JWT no header Authorization
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  config.headers['X-Request-Time'] = new Date().toISOString();
   return config;
 });
 
-// Interceptor de resposta: redireciona para login se token expirou (401)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const status = error.response?.status;
+
+    if (status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      window.location.href = '/login';
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
     }
+
+    if (status === 429) {
+      error.userMessage = 'Muitas requisições. Tente novamente em instantes.';
+    } else if (status >= 500) {
+      error.userMessage = 'Erro interno no servidor. Tente novamente mais tarde.';
+    } else if (!error.response) {
+      error.userMessage = 'Falha de conexão com o servidor.';
+    }
+
     return Promise.reject(error);
   }
 );

@@ -4,6 +4,10 @@
 
 /* ===== Fontes e Reset ===== */
 
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
   margin: 0;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -11,13 +15,22 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: #0f172a;
   color: #e2e8f0;
+  overscroll-behavior: none;
+}
+
+html {
+  touch-action: manipulation;
 }
 
 /* ===== Scrollbar customizada ===== */
-::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: #1e293b; }
 ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+@media (max-width: 768px) {
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+}
 
 /* ===== React Quill ===== */
 .ql-toolbar.ql-snow {
@@ -29,6 +42,7 @@ body {
 .ql-toolbar.ql-snow .ql-fill { fill: #94a3b8; }
 .ql-toolbar.ql-snow .ql-picker { color: #94a3b8; }
 .ql-toolbar.ql-snow .ql-picker-options { background-color: #1e293b; border-color: #334155; }
+.ql-toolbar.ql-snow button { padding: 3px 5px; }
 
 .ql-container.ql-snow {
   border-radius: 0 0 0.75rem 0.75rem;
@@ -39,21 +53,54 @@ body {
   background-color: #0f172a;
   color: #e2e8f0;
 }
-.ql-editor { min-height: 220px; }
+.ql-editor { 
+  min-height: 220px; 
+  font-size: 0.95rem;
+}
 .ql-editor.ql-blank::before { color: #64748b; }
+
+@media (max-width: 640px) {
+  .ql-toolbar.ql-snow {
+    padding: 8px;
+  }
+  .ql-toolbar.ql-snow button {
+    width: 28px;
+    height: 28px;
+    padding: 4px;
+  }
+  .ql-container.ql-snow {
+    min-height: 180px;
+    font-size: 0.9rem;
+  }
+  .ql-editor {
+    min-height: 180px;
+    padding: 12px;
+  }
+}
 
 /* ===== Conteúdo renderizado de notas ===== */
 .note-content h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; color: #f1f5f9; }
 .note-content h2 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; color: #e2e8f0; }
 .note-content h3 { font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem; color: #cbd5e1; }
-.note-content p { margin-bottom: 0.5rem; color: #cbd5e1; }
+.note-content p { margin-bottom: 0.5rem; color: #cbd5e1; line-height: 1.6; }
 .note-content ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 0.5rem; }
 .note-content ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 0.5rem; }
+.note-content li { margin-bottom: 0.25rem; line-height: 1.6; }
 .note-content strong { font-weight: 700; color: #f1f5f9; }
 .note-content em { font-style: italic; }
 .note-content blockquote { border-left: 3px solid #6366f1; padding-left: 1rem; color: #94a3b8; margin: 0.5rem 0; }
 .note-content pre { background: #1e293b; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; }
 .note-content code { font-family: 'Fira Code', monospace; font-size: 0.875rem; }
+
+@media (max-width: 640px) {
+  .note-content h1 { font-size: 1.25rem; }
+  .note-content h2 { font-size: 1.125rem; }
+  .note-content h3 { font-size: 1rem; }
+  .note-content p { font-size: 0.9rem; }
+  .note-content pre { padding: 0.75rem; font-size: 0.8rem; }
+  .note-content code { font-size: 0.8rem; }
+  .note-content ul, .note-content ol { padding-left: 1.25rem; }
+}
 
 /* ===== Animações ===== */
 @keyframes fadeIn {

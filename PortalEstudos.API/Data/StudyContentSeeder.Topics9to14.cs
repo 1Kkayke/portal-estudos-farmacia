@@ -4,12 +4,15 @@ public static partial class StudyContentSeeder
 {
     static partial void GenerateTopics9to14(Dictionary<int, (DocDef[], QDef[])> data)
     {
-        // Topics 9-14: Fast generation with term banks
-        string[] docTitles = new string[20];
-        for (int i = 0; i < 20; i++) docTitles[i] = $"Documento {i + 1}";
-
         // Topic 9: Farmacoepidemiologia
-        data[9] = (BuildDocs("Farmacoepidemiologia", docTitles), BuildFromTerms("Farmacoepidemiologia", new QDef[0], new[] {
+        data[9] = (BuildDocs("Farmacoepidemiologia", new[] {
+            "Introdução à Farmacoepidemiologia", "Estudos de Utilização de Medicamentos", "Dose Diária Definida (DDD)", "Classificação ATC",
+            "Farmacoeconomia e Avaliação de Tecnologias", "Análise de Custo-Efetividade", "QALY e Carga de Doença",
+            "Ensaios Clínicos Pragmáticos", "Incidência e Prevalência de Doenças", "Risco Relativo e Odds Ratio",
+            "Estudos de Coorte", "Estudos Caso-Controle", "Vieses em Estudos Epidemiológicos", "Confundimento e Causalidade",
+            "Indicadores da OMS para Uso Racional", "Polifarmácia e Prescrição Inadequada", "Farmacovigilância Populacional",
+            "CONITEC e Incorporação de Tecnologias", "Estudos de Fase IV", "Farmacoepidemiologia no SUS"
+        }), BuildFromTerms("Farmacoepidemiologia", new QDef[0], new[] {
             ("DDD", "Dose Diária Definida: dose média de manutenção assumida por dia para um fármaco"),
             ("ATC", "Sistema de classificação anatômica, terapêutica e química de medicamentos"),
             ("CONITEC", "Comissão Nacional de Incorporação de Tecnologias no SUS"),
@@ -32,7 +35,16 @@ public static partial class StudyContentSeeder
         }));
 
         // Topic 10: Farmacoterapia
-        data[10] = (BuildDocs("Farmacoterapia", docTitles), BuildFromTerms("Farmacoterapia", new QDef[0], new[] {
+        data[10] = (BuildDocs("Farmacoterapia", new[] {
+            "Princípios da Farmacoterapia", "Uso Racional de Medicamentos", "Farmacoterapia Baseada em Evidências",
+            "Farmacoterapia da Hipertensão Arterial", "Farmacoterapia do Diabetes Mellitus", "Farmacoterapia da Dislipidemia",
+            "Farmacoterapia da Insuficiência Cardíaca", "Farmacoterapia da Doença Arterial Coronariana",
+            "Farmacoterapia da Asma e DPOC", "Farmacoterapia da Úlcera Péptica", "Farmacoterapia da Doença Inflamatória Intestinal",
+            "Farmacoterapia das Infecções Respiratórias", "Farmacoterapia das Infecções Urinárias",
+            "Farmacoterapia da Dor Aguda e Crônica", "Farmacoterapia dos Distúrbios da Tireoide",
+            "Farmacoterapia da Osteoporose", "Farmacoterapia em Geriatria", "Farmacoterapia Pediátrica",
+            "Farmacoterapia na Gestação e Lactação", "Conciliação Medicamentosa e Seguimento Farmacoterapêutico"
+        }), BuildFromTerms("Farmacoterapia", new QDef[0], new[] {
             ("Terapia sequencial", "Substituição de antibiótico IV por oral após estabilização clínica"),
             ("IECA", "Inibidores da enzima conversora de angiotensina para HAS e IC"),
             ("BRA", "Bloqueadores do receptor de angiotensina II para HAS"),
@@ -56,7 +68,15 @@ public static partial class StudyContentSeeder
         }));
 
         // Topic 11: Química Farmacêutica
-        data[11] = (BuildDocs("Química Farmacêutica", docTitles), BuildFromTerms("Química Farmacêutica", new QDef[0], new[] {
+        data[11] = (BuildDocs("Química Farmacêutica", new[] {
+            "Introdução à Química Medicinal", "Relação Estrutura-Atividade (SAR)", "Bioisosterismo", "Grupos Farmacofóricos",
+            "Planejamento de Fármacos", "Drug Design Racional", "Química Combinatória", "High-Throughput Screening",
+            "Fármacos Agonistas e Antagonistas", "Pró-fármacos e Latenciação", "Estereoquímica de Fármacos",
+            "Metabolismo de Fármacos e Metabólitos Ativos", "Beta-Lactâmicos: Química e Mecanismos",
+            "Inibidores de Enzimas", "Receptores e Interações Ligante-Receptor", "Química dos Antivirais",
+            "Química dos Antineoplásicos", "Química dos Anti-inflamatórios", "Química dos Antidepressivos",
+            "Química dos Fármacos Cardiovasculares"
+        }), BuildFromTerms("Química Farmacêutica", new QDef[0], new[] {
             ("REA", "Relação Estrutura-Atividade que correlaciona grupo químico e efeito farmacológico"),
             ("QSAR", "Relação Quantitativa Estrutura-Atividade usando modelos matemáticos"),
             ("Bioisosterismo", "Substituição de átomo/grupo por outro similar que mantém atividade"),
@@ -73,7 +93,16 @@ public static partial class StudyContentSeeder
         }));
 
         // Topic 12: Química Orgânica
-        data[12] = (BuildDocs("Química Orgânica", docTitles), BuildFromTerms("Química Orgânica", new QDef[0], new[] {
+        data[12] = (BuildDocs("Química Orgânica", new[] {
+            "Estrutura e Ligações Químicas", "Hidrocarbonetos: Alcanos, Alcenos e Alcinos", "Compostos Aromáticos e Aromaticidade",
+            "Álcoois, Fenóis e Éteres", "Aldeídos e Cetonas", "Ácidos Carboxílicos e Derivados",
+            "Aminas e Compostos Nitrogenados", "Estereoquímica: Quiralidade e Enantiômeros",
+            "Isomeria Geométrica e Conformacional", "Reações de Substituição Nucleofílica",
+            "Reações de Eliminação", "Reações de Adição em Alcenos", "Reações de Oxidação e Redução",
+            "Mecanismos de Reação Orgânica", "Ressonância e Estabilidade de Intermediários",
+            "Compostos Heterocíclicos", "Química dos Carboidratos", "Química dos Lipídeos",
+            "Química dos Aminoácidos e Proteínas", "Espectroscopia para Identificação de Compostos"
+        }), BuildFromTerms("Química Orgânica", new QDef[0], new[] {
             ("Hibridização sp3", "Geometria tetraédrica, ângulo 109,5°, carbono saturado"),
             ("Carbono quiral", "Carbono assimétrico ligado a 4 grupos diferentes, gerando enantiômeros"),
             ("Enantiômeros", "Isômeros ópticos que são imagens especulares não sobreponíveis"),
@@ -94,7 +123,15 @@ public static partial class StudyContentSeeder
         }));
 
         // Topic 13: Química Analítica
-        data[13] = (BuildDocs("Química Analítica", docTitles), BuildFromTerms("Química Analítica", new QDef[0], new[] {
+        data[13] = (BuildDocs("Química Analítica", new[] {
+            "Introdução à Química Analítica", "Análise Qualitativa e Quantitativa", "Equilíbrio Químico em Análise",
+            "Titulações Ácido-Base", "Titulações de Precipitação", "Titulações Complexométricas",
+            "Titulações de Oxirredução", "Gravimetria", "Espectrofotometria UV-Visível", "Lei de Beer-Lambert",
+            "Espectroscopia de Absorção Atômica", "Cromatografia Líquida de Alta Eficiência (HPLC)",
+            "Cromatografia Gasosa (GC)", "Cromatografia em Camada Delgada (TLC)",
+            "Espectrometria de Massas", "Ressonância Magnética Nuclear (RMN)", "Validação de Métodos Analíticos",
+            "Linearidade, Precisão e Exatidão", "Limite de Detecção e Quantificação", "Controle de Qualidade Analítico"
+        }), BuildFromTerms("Química Analítica", new QDef[0], new[] {
             ("Lei de Lambert-Beer", "A = εbc relaciona absorbância com concentração e caminho óptico"),
             ("Titulação ácido-base", "Determinação de concentração por reação de neutralização"),
             ("Titulação complexométrica", "Usa EDTA para determinar metais por formação de complexo"),
@@ -116,7 +153,15 @@ public static partial class StudyContentSeeder
         }));
 
         // Topic 14: Controle de Qualidade
-        data[14] = (BuildDocs("Controle de Qualidade", docTitles), BuildFromTerms("Controle de Qualidade", new QDef[0], new[] {
+        data[14] = (BuildDocs("Controle de Qualidade", new[] {
+            "Introdução ao Controle de Qualidade Farmacêutico", "Boas Práticas de Fabricação (BPF)",
+            "Farmacopeias e Compêndios Oficiais", "Ensaios Físico-Químicos", "Ensaios de Identificação",
+            "Ensaios de Doseamento", "Testes de Dissolução", "Uniformidade de Conteúdo",
+            "Peso Médio e Variação de Peso", "Desintegração e Friabilidade", "Teor de Água e Resíduo de Incineração",
+            "Controle Microbiológico", "Testes de Esterilidade", "Endotoxinas Bacterianas",
+            "Contagem Microbiana", "Validação de Processos", "Qualificação de Equipamentos",
+            "Amostragem e Inspeção", "Gráficos de Controle", "Auditoria e Certificação de Qualidade"
+        }), BuildFromTerms("Controle de Qualidade", new QDef[0], new[] {
             ("BPF", "Boas Práticas de Fabricação para garantir qualidade de medicamentos"),
             ("Garantia da Qualidade", "Sistema que assegura qualidade em todas as etapas do produto"),
             ("Teste de dissolução", "Avalia velocidade de liberação do fármaco da forma farmacêutica"),

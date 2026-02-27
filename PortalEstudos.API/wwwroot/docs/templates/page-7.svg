@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1400" viewBox="0 0 1000 1400">
+  <rect width="1000" height="1400" fill="#0f172a"/>
+  <rect x="60" y="60" width="880" height="1280" rx="18" fill="#ffffff"/>
+  <text x="110" y="120" font-family="Arial, Helvetica, sans-serif" font-size="28" fill="#0f172a">Portal Estudos</text>
+  <text x="110" y="180" font-family="Arial, Helvetica, sans-serif" font-size="20" fill="#111827">Quadros clinicos</text>
+
+  <rect x="110" y="230" width="780" height="6" fill="#e5e7eb"/>
+
+  <rect x="110" y="280" width="780" height="200" rx="12" fill="#f1f5f9" stroke="#e2e8f0"/>
+  <rect x="140" y="320" width="260" height="10" fill="#cbd5f5"/>
+  <rect x="140" y="350" width="220" height="10" fill="#cbd5f5"/>
+  <rect x="140" y="380" width="280" height="10" fill="#cbd5f5"/>
+
+  <rect x="110" y="520" width="780" height="200" rx="12" fill="#f8fafc" stroke="#e2e8f0"/>
+  <rect x="140" y="560" width="260" height="10" fill="#cbd5f5"/>
+  <rect x="140" y="590" width="240" height="10" fill="#cbd5f5"/>
+  <rect x="140" y="620" width="300" height="10" fill="#cbd5f5"/>
+
+  <text x="110" y="780" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#0f172a">Resumo de casos</text>
+  <rect x="110" y="805" width="780" height="6" fill="#e5e7eb"/>
+  <rect x="110" y="835" width="760" height="10" fill="#cbd5f5"/>
+  <rect x="110" y="860" width="740" height="10" fill="#cbd5f5"/>
+
+  <text x="110" y="1180" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#94a3b8">Documento academico ilustrativo - Portal Estudos</text>
+</svg>

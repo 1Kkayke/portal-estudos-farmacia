@@ -31,15 +31,35 @@ public sealed class NewsFeedService
         ("pharmaceutical+sciences+2025", "Ciências Farmacêuticas"),
         ("clinical+pharmacy+patient+care", "Farmácia Clínica"),
         ("pharmacology+drug+therapy+2025", "Farmacologia"),
+        ("drug+delivery+systems", "Tecnologia Farmacêutica"),
+        ("antibiotic+resistance+bacteria", "Microbiologia"),
+        ("cancer+chemotherapy+treatment", "Oncologia"),
+        ("cardiovascular+disease+prevention", "Cardiologia"),
+        ("diabetes+management+insulin", "Endocrinologia"),
+        ("mental+health+psychiatric+medication", "Psicofarmacologia"),
+        ("vaccine+immunization+safety", "Imunologia"),
     };
 
     // ── RSS / Atom feeds ──
     private static readonly (string Url, string Source, string Categoria)[] RssFeeds =
     {
+        // Saúde Global
         ("https://www.who.int/rss-feeds/news-english.xml", "OMS (WHO)", "Saúde Global"),
-        ("https://rss.sciencedaily.com/health_medicine/pharmaceuticals.xml", "ScienceDaily", "Ciências Farmacêuticas"),
-        ("https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds/press-releases/rss.xml", "FDA", "Notícias Médicas"),
         ("https://news.un.org/feed/subscribe/en/news/topic/health/feed/rss.xml", "UN News Health", "Saúde Global"),
+        
+        // Notícias Científicas
+        ("https://rss.sciencedaily.com/health_medicine/pharmaceuticals.xml", "ScienceDaily - Farmácia", "Ciências Farmacêuticas"),
+        ("https://rss.sciencedaily.com/health_medicine/drugs.xml", "ScienceDaily - Medicamentos", "Farmacologia"),
+        ("https://rss.sciencedaily.com/health_medicine/diseases_conditions.xml", "ScienceDaily - Doenças", "Saúde Clínica"),
+        
+        // Regulação e Política
+        ("https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds/press-releases/rss.xml", "FDA", "Notícias Médicas"),
+        ("https://www.ema.europa.eu/en/rss.xml", "EMA - Europa", "Regulação"),
+        
+        // Saúde e Medicina
+        ("https://www.nlm.nih.gov/databases/alerts/medlineplus_health_topics.xml", "NIH MedlinePlus", "Saúde Clínica"),
+        ("https://feeds.aap.org/research/latest/feed.rss", "AAP - Pediatria", "Pediatria"),
+        ("https://feeds.nature.com/nature/rss/current", "Nature Medicine", "Pesquisa Médica"),
     };
 
     // ── Category → image mapping (Unsplash, fallback) ──
@@ -50,6 +70,17 @@ public sealed class NewsFeedService
         ["Farmacologia"] = "https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=800&h=400&fit=crop&auto=format&q=80",
         ["Notícias Médicas"] = "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=800&h=400&fit=crop&auto=format&q=80",
         ["Saúde Global"] = "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=800&h=400&fit=crop&auto=format&q=80",
+        ["Tecnologia Farmacêutica"] = "https://images.unsplash.com/photo-1530725807519-2d1f1849e56a?w=800&h=400&fit=crop&auto=format&q=80",
+        ["Microbiologia"] = "https://images.unsplash.com/photo-1530727191805-c1a2f1c9f9b5?w=800&h=400&fit=crop&auto=format&q=80",
+        ["Oncologia"] = "https://images.unsplash.com/photo-1576091160679-112b8d7d5cad?w=800&h=400&fit=crop&auto=format&q=80",
+        ["Cardiologia"] = "https://images.unsplash.com/photo-1576091160399-0ff0b764b04a?w=800&h=400&fit=crop&auto=format&q=80",
+        ["Endocrinologia"] = "https://images.unsplash.com/photo-1576091160568-4286e3a5c15e?w=800&h=400&fit=crop&auto=format&q=80",
+        ["Psicofarmacologia"] = "https://images.unsplash.com/photo-1489749798305-4fea3ba63d60?w=800&h=400&fit=crop&auto=format&q=80",
+        ["Imunologia"] = "https://images.unsplash.com/photo-1573782645897-e8207e773f10?w=800&h=400&fit=crop&auto=format&q=80",
+        ["Saúde Clínica"] = "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&h=400&fit=crop&auto=format&q=80",
+        ["Regulação"] = "https://images.unsplash.com/photo-1589939705882-02d0e1c0f998?w=800&h=400&fit=crop&auto=format&q=80",
+        ["Pesquisa Médica"] = "https://images.unsplash.com/photo-1579154204601-01d6f179fbe9?w=800&h=400&fit=crop&auto=format&q=80",
+        ["Pediatria"] = "https://images.unsplash.com/photo-1576091160485-112184aa202e?w=800&h=400&fit=crop&auto=format&q=80",
     };
     private const string FallbackImage = "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=800&h=400&fit=crop&auto=format&q=80";
 

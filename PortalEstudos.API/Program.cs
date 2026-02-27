@@ -1,17 +1,25 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PortalEstudos.API.Data;
+using PortalEstudos.API.Middleware;
 using PortalEstudos.API.Models;
+using PortalEstudos.API.Security;
 using PortalEstudos.API.Services;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var isProduction = builder.Environment.IsProduction();
+var defaultConn = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=PortalEstudos.db";
+var envConn = builder.Configuration["DB_CONNECTION_STRING"];
+var connectionString = string.IsNullOrWhiteSpace(envConn) ? defaultConn : envConn;
+
 // ===== 1. Banco de Dados (SQLite via EF Core) =====
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite(connectionString));
 
 // ===== 2. ASP.NET Core Identity =====
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -26,9 +34,26 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
+// Configurar expiração de token de recuperação de senha para 24 horas
+builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
+{
+    options.TokenLifespan = TimeSpan.FromHours(24);
+});
+
 // ===== 3. Autenticação JWT =====
 var jwtKey = builder.Configuration["Jwt:Key"]
     ?? throw new InvalidOperationException("JWT Key não configurada no appsettings.json");
+
+var envJwtKey = builder.Configuration["JWT_SECRET_KEY"];
+if (!string.IsNullOrWhiteSpace(envJwtKey))
+{
+    jwtKey = envJwtKey;
+}
+
+if (isProduction && jwtKey.Contains("ChaveSecretaPortalEstudosFarmacia", StringComparison.OrdinalIgnoreCase))
+{
+    throw new InvalidOperationException("JWT_SECRET_KEY deve ser configurada por variável de ambiente em produção.");
+}
 
 builder.Services.AddAuthentication(options =>
 {
@@ -51,6 +76,8 @@ builder.Services.AddAuthentication(options =>
 
 // ===== 4. Serviços da aplicação =====
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<EmailService>();
+builder.Services.AddSingleton<DocumentPdfService>();
 builder.Services.AddHttpClient<TranslationService>();
 builder.Services.AddHttpClient<NewsFeedService>()
     .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
@@ -61,15 +88,27 @@ builder.Services.AddHttpClient<NewsFeedService>()
 // ===== 5. Controllers e Swagger =====
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+builder.Services.AddCustomRateLimiting(builder.Configuration);
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+});
 
 // ===== 6. CORS — permite chamadas do frontend React (porta 5173) =====
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5173", "http://localhost:5174", "http://localhost:3000")
+        var configuredOrigins = builder.Configuration["CORS_ALLOWED_ORIGINS"];
+        var origins = string.IsNullOrWhiteSpace(configuredOrigins)
+            ? new[] { "http://localhost:5173", "http://localhost:5174", "http://localhost:3000" }
+            : configuredOrigins.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+
+        policy.WithOrigins(origins)
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
@@ -81,7 +120,21 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.UseForwardedHeaders();
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseSecurityHeaders();
+
+// Servir arquivos estáticos (imagens de perfil, etc.)
+app.UseStaticFiles();
+
 app.UseCors("AllowFrontend");
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

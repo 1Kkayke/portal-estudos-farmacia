@@ -36,6 +36,9 @@ export default function QuestionsPage() {
         ]);
         setQuestions(qRes.data);
         setTopic(tRes.data.find(t => t.id === parseInt(topicId)));
+        
+        // Registrar atividade (último acesso)
+        api.post(`/usertopics/activity/${topicId}`).catch(console.error);
       } catch (err) {
         console.error(err);
       } finally {

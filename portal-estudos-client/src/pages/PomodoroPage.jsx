@@ -83,20 +83,20 @@ export default function PomodoroPage() {
   const IconM = mode.icon;
 
   return (
-    <div className="p-6 lg:p-8 max-w-2xl mx-auto space-y-8">
+    <div className="p-4 md:p-6 lg:p-8 max-w-2xl mx-auto space-y-6 lg:space-y-8">
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-white flex items-center justify-center gap-3">
-          <BookOpen className="w-7 h-7 text-indigo-400" /> Pomodoro Timer
+        <h1 className="text-xl md:text-2xl font-bold text-white flex items-center justify-center gap-2 lg:gap-3">
+          <BookOpen className="w-6 h-6 lg:w-7 lg:h-7 text-indigo-400" /> Pomodoro Timer
         </h1>
-        <p className="text-slate-400 text-sm mt-1">Técnica de estudo com intervalos focados de 25 minutos.</p>
+        <p className="text-slate-400 text-xs md:text-sm mt-1">Técnica de estudo com intervalos focados de 25 minutos.</p>
       </div>
 
       {/* Mode Tabs */}
-      <div className="flex justify-center gap-2">
+      <div className="flex justify-center gap-1.5 lg:gap-2">
         {MODES.map((m, i) => (
           <button key={i} onClick={() => switchMode(i)}
-            className={`px-4 py-2 rounded-xl text-sm font-medium transition cursor-pointer ${
+            className={`px-3 md:px-4 py-2 rounded-xl text-xs md:text-sm font-medium transition cursor-pointer active:scale-95 ${
               modeIdx === i
                 ? 'text-white'
                 : 'bg-slate-800/50 text-slate-400 hover:text-white border border-slate-700/50'

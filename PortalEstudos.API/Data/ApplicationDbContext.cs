@@ -25,6 +25,8 @@ namespace PortalEstudos.API.Data
         public DbSet<Exam> Exams => Set<Exam>();
         public DbSet<ExamAttempt> ExamAttempts => Set<ExamAttempt>();
         public DbSet<ExamAnswer> ExamAnswers => Set<ExamAnswer>();
+        public DbSet<UserTopicInterest> UserTopicInterests => Set<UserTopicInterest>();
+        public DbSet<UserTopicActivity> UserTopicActivities => Set<UserTopicActivity>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -79,53 +79,43 @@ const SECTIONS = [
 
 export default function RecursosPage() {
   return (
-    <div className="p-6 lg:p-8 max-w-5xl mx-auto space-y-8">
+    <div className="p-4 md:p-6 lg:p-8 max-w-6xl mx-auto space-y-6 lg:space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-          <BookOpen className="w-7 h-7 text-indigo-400" /> Recursos Úteis
-        </h1>
-        <p className="text-slate-400 text-sm mt-1">Links essenciais para o dia a dia do estudante de Farmácia.</p>
-      </div>
-
-      {/* Stats */}
-      <div className="flex gap-3 flex-wrap">
-        <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-2 text-sm">
-          <span className="text-white font-semibold">{SECTIONS.length}</span>
-          <span className="text-slate-400 ml-1">categorias</span>
-        </div>
-        <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-2 text-sm">
-          <span className="text-white font-semibold">{SECTIONS.reduce((a, s) => a + s.links.length, 0)}</span>
-          <span className="text-slate-400 ml-1">recursos</span>
-        </div>
+      <div className="text-center lg:text-left">
+        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2">Recursos Úteis</h1>
+        <p className="text-slate-400 text-xs md:text-sm lg:text-base max-w-3xl mx-auto lg:mx-0">
+          Links cuidadosamente selecionados para apoiar seus estudos em Farmácia: órgãos oficiais, bulários, artigos científicos e ferramentas práticas.
+        </p>
       </div>
 
       {/* Sections */}
-      {SECTIONS.map((sec, i) => {
-        const Icon = sec.icone;
-        return (
-          <div key={i} className="space-y-3">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl" style={{ backgroundColor: sec.cor + '22' }}>
-                <Icon className="w-5 h-5" style={{ color: sec.cor }} />
+      <div className="space-y-6 lg:space-y-8">
+        {SECTIONS.map((sec) => {
+          const Icon = sec.icone;
+          return (
+            <section key={sec.titulo} className="animate-fadeIn">
+              <div className="flex items-center gap-2.5 lg:gap-3 mb-3 lg:mb-4">
+                <div className="p-2 lg:p-2.5 rounded-xl" style={{ backgroundColor: sec.cor + '22', color: sec.cor }}>
+                  <Icon className="w-5 h-5 lg:w-6 lg:h-6" />
+                </div>
+                <h2 className="text-base md:text-lg lg:text-xl font-bold text-white">{sec.titulo}</h2>
               </div>
-              <h2 className="text-lg font-semibold text-white">{sec.titulo}</h2>
-            </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 pl-12">
-              {sec.links.map((link, j) => (
-                <a key={j} href={link.url} target="_blank" rel="noopener noreferrer"
-                  className="group block rounded-xl bg-slate-800/50 border border-slate-700/50 p-4 hover:border-slate-600/50 transition">
-                  <div className="flex items-start justify-between gap-2">
-                    <h3 className="text-white text-sm font-medium group-hover:text-indigo-400 transition">{link.nome}</h3>
-                    <ExternalLink className="w-3.5 h-3.5 text-slate-600 group-hover:text-indigo-400 transition flex-shrink-0 mt-0.5" />
-                  </div>
-                  <p className="text-slate-500 text-xs mt-1.5 leading-relaxed">{link.desc}</p>
-                </a>
-              ))}
-            </div>
-          </div>
-        );
-      })}
+              <div className="grid md:grid-cols-2 gap-3 lg:gap-4">
+                {sec.links.map((link) => (
+                  <a key={link.nome} href={link.url} target="_blank" rel="noopener noreferrer"
+                    className="group flex items-start gap-3 lg:gap-4 p-4 lg:p-5 rounded-xl lg:rounded-2xl bg-slate-800/50 border border-slate-700/50 hover:border-slate-600 active:border-slate-500 transition-all duration-200 active:scale-[0.99]">
+                    <ExternalLink className="w-4 h-4 lg:w-5 lg:h-5 text-slate-500 group-hover:text-indigo-400 transition mt-0.5 shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm lg:text-base font-semibold text-white group-hover:text-indigo-300 transition mb-1 truncate">{link.nome}</h3>
+                      <p className="text-xs lg:text-sm text-slate-400 leading-relaxed line-clamp-2">{link.desc}</p>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </section>
+          );
+        })}
+      </div>
     </div>
   );
 }
