@@ -1,0 +1,67 @@
+# .NET
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+project.lock.json
+project.fragment.lock.json
+artifacts/
+**/Properties/launchSettings.json
+*.dbmdl
+*.jfm
+*.pfx
+*.publishsettings
+orleans.codegen.cs
+appsettings.Development.json
+appsettings.Local.json
+
+# SQLite Database
+*.db
+*.db-shm
+*.db-wal
+
+# Visual Studio
+.vs/
+.vscode/
+*.rsuser
+*.sln.iml
+
+# Rider
+.idea/
+*.sln.iml
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+dist/
+dist-ssr/
+*.local
+
+# Frontend build
+portal-estudos-client/dist/
+portal-estudos-client/node_modules/
+
+# Logs
+logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Migrations (opcional - descomente se não quiser commitar migrations)
+# **/Migrations/
+
+# Environment
+.env
+.env.local
+.env.*.local
