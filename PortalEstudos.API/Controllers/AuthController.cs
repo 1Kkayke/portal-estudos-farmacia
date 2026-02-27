@@ -115,8 +115,14 @@ namespace PortalEstudos.API.Controllers
 
             // Atualiza os dados
             user.NomeCompleto = dto.NomeCompleto;
-            user.Email = dto.Email;
-            user.UserName = dto.Email;
+            
+            // Só atualiza email e username se email foi fornecido e é diferente do atual
+            if (!string.IsNullOrWhiteSpace(dto.Email) && dto.Email != user.Email)
+            {
+                user.Email = dto.Email;
+                user.UserName = dto.Email;
+            }
+            
             user.Telefone = dto.Telefone;
             user.DataNascimento = dto.DataNascimento;
             user.Bio = dto.Bio;
