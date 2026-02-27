@@ -14,7 +14,6 @@
   from = "/*"
   to = "/index.html"
   status = 200
-  force = true
 
 # Headers de Segurança
 [[headers]]
@@ -24,8 +23,8 @@
     # Força HTTPS em todas as conexões
     Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
     
-    # Content Security Policy - Máxima proteção contra XSS
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.seu-dominio.com.br; media-src 'self' https:; object-src 'none'; frame-src https://www.youtube.com; base-uri 'self'; form-action 'self'"
+    # Content Security Policy - Relaxado para permitir Vite/React funcionar
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' http://localhost:5000 https:; media-src 'self' https:; object-src 'none'; frame-src https://www.youtube.com https://youtube.com; base-uri 'self'; form-action 'self'"
     
     # Previne clique em iframes (clickjacking)
     X-Frame-Options = "SAMEORIGIN"
@@ -39,8 +38,8 @@
     # Ativa proteção XSS no navegador
     X-XSS-Protection = "1; mode=block"
     
-    # Previne cache de dados sensíveis
-    Cache-Control = "public, max-age=3600"
+    # Cache de assets
+    Cache-Control = "public, max-age=0, must-revalidate"
     
     # Impede acesso de plugins
     X-Permitted-Cross-Domain-Policies = "none"
