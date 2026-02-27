@@ -3,10 +3,9 @@
 [build]
   command = "npm run build"
   publish = "dist"
-  environment = { NODE_VERSION = "20.11.0" }
 
-# Variáveis de ambiente (usar Netlify Dashboard para secrets)
 [build.environment]
+  NODE_VERSION = "20.11.0"
   VITE_APP_ENV = "production"
   VITE_ENABLE_LOGGING = "false"
 
