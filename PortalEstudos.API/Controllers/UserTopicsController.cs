@@ -20,7 +20,15 @@ namespace PortalEstudos.API.Controllers
             _context = context;
         }
 
-        private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        private async Task<(bool IsValid, string? UserId)> ValidateCurrentUserAsync()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(userId))
+                return (false, null);
+
+            var exists = await _context.Users.AnyAsync(u => u.Id == userId);
+            return exists ? (true, userId) : (false, userId);
+        }
 
         /// <summary>
         /// GET /api/usertopics/favorites
@@ -29,7 +37,9 @@ namespace PortalEstudos.API.Controllers
         [HttpGet("favorites")]
         public async Task<IActionResult> GetFavorites()
         {
-            var userId = GetUserId();
+            var (isValidUser, userId) = await ValidateCurrentUserAsync();
+            if (!isValidUser)
+                return Unauthorized(new { message = "Sessão inválida. Faça login novamente." });
 
             var favorites = await _context.UserTopicInterests
                 .Where(x => x.UserId == userId)
@@ -59,7 +69,9 @@ namespace PortalEstudos.API.Controllers
         [HttpGet("recent")]
         public async Task<IActionResult> GetRecentStudies()
         {
-            var userId = GetUserId();
+            var (isValidUser, userId) = await ValidateCurrentUserAsync();
+            if (!isValidUser)
+                return Unauthorized(new { message = "Sessão inválida. Faça login novamente." });
 
             // Passo 1: Pega os IDs da atividade mais recente de cada tópico
             var recentActivityIds = await _context.UserTopicActivities
@@ -96,7 +108,9 @@ namespace PortalEstudos.API.Controllers
         [HttpPost("favorites/{topicId}")]
         public async Task<IActionResult> ToggleFavorite(int topicId)
         {
-            var userId = GetUserId();
+            var (isValidUser, userId) = await ValidateCurrentUserAsync();
+            if (!isValidUser)
+                return Unauthorized(new { message = "Sessão inválida. Faça login novamente." });
 
             var topic = await _context.Topics.FindAsync(topicId);
             if (topic == null)
@@ -117,7 +131,7 @@ namespace PortalEstudos.API.Controllers
                 // Adiciona aos favoritos
                 _context.UserTopicInterests.Add(new UserTopicInterest
                 {
-                    UserId = userId,
+                    UserId = userId!,
                     TopicId = topicId,
                     DataMarcacao = DateTime.UtcNow
                 });
@@ -133,7 +147,9 @@ namespace PortalEstudos.API.Controllers
         [HttpPost("activity/{topicId}")]
         public async Task<IActionResult> RecordActivity(int topicId)
         {
-            var userId = GetUserId();
+            var (isValidUser, userId) = await ValidateCurrentUserAsync();
+            if (!isValidUser)
+                return Unauthorized(new { message = "Sessão inválida. Faça login novamente." });
 
             var topic = await _context.Topics.FindAsync(topicId);
             if (topic == null)
@@ -153,7 +169,7 @@ namespace PortalEstudos.API.Controllers
                 // Cria novo registro
                 _context.UserTopicActivities.Add(new UserTopicActivity
                 {
-                    UserId = userId,
+                    UserId = userId!,
                     TopicId = topicId,
                     UltimoAcesso = DateTime.UtcNow,
                     TotalAcessos = 1
@@ -171,7 +187,9 @@ namespace PortalEstudos.API.Controllers
         [HttpGet("check-favorite/{topicId}")]
         public async Task<IActionResult> CheckFavorite(int topicId)
         {
-            var userId = GetUserId();
+            var (isValidUser, userId) = await ValidateCurrentUserAsync();
+            if (!isValidUser)
+                return Unauthorized(new { message = "Sessão inválida. Faça login novamente." });
 
             var isFavorite = await _context.UserTopicInterests
                 .AnyAsync(x => x.UserId == userId && x.TopicId == topicId);
@@ -186,7 +204,9 @@ namespace PortalEstudos.API.Controllers
         [HttpGet("debug")]
         public async Task<IActionResult> Debug()
         {
-            var userId = GetUserId();
+            var (isValidUser, userId) = await ValidateCurrentUserAsync();
+            if (!isValidUser)
+                return Unauthorized(new { message = "Sessão inválida. Faça login novamente." });
 
             var favoritesCount = await _context.UserTopicInterests
                 .CountAsync(x => x.UserId == userId);
