@@ -1,0 +1,12 @@
+# Railway ignore - arquivos que não precisam ser deployados
+*.db
+*.db-shm
+*.db-wal
+obj/
+bin/
+.vs/
+.vscode/
+*.user
+*.suo
+appsettings.Development.json
+appsettings.Local.json
