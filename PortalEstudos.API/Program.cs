@@ -9,23 +9,41 @@ using PortalEstudos.API.Models;
 using PortalEstudos.API.Security;
 using PortalEstudos.API.Services;
 using System.Text;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var isProduction = builder.Environment.IsProduction();
 var defaultConn = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=PortalEstudos.db";
-var envConn = builder.Configuration["DB_CONNECTION_STRING"];
+var envConn = builder.Configuration["DB_CONNECTION_STRING"] ?? builder.Configuration["DATABASE_URL"];
 var connectionString = string.IsNullOrWhiteSpace(envConn) ? defaultConn : envConn;
+var usePostgres = IsPostgresConnectionString(connectionString);
 
-if (isProduction && string.IsNullOrWhiteSpace(envConn))
+if (usePostgres)
+{
+    connectionString = NormalizePostgresConnectionString(connectionString);
+}
+
+if (isProduction && string.IsNullOrWhiteSpace(envConn) && !usePostgres)
 {
     var writableDbPath = Path.Combine(Path.GetTempPath(), "PortalEstudos.db");
     connectionString = $"Data Source={writableDbPath}";
 }
 
-// ===== 1. Banco de Dados (SQLite via EF Core) =====
+// ===== 1. Banco de Dados (PostgreSQL/SQLite via EF Core) =====
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connectionString));
+{
+    if (usePostgres)
+    {
+        options.UseNpgsql(connectionString, npgsql =>
+        {
+            npgsql.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+        });
+        return;
+    }
+
+    options.UseSqlite(connectionString);
+});
 
 // ===== 2. ASP.NET Core Identity =====
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -151,7 +169,15 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.Migrate();
+
+    if (usePostgres)
+    {
+        db.Database.EnsureCreated();
+    }
+    else
+    {
+        db.Database.Migrate();
+    }
     
     // Fazer seeding apenas em desenvolvimento
     if (app.Environment.IsDevelopment())
@@ -161,3 +187,49 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+
+static bool IsPostgresConnectionString(string connectionString)
+{
+    if (string.IsNullOrWhiteSpace(connectionString))
+        return false;
+
+    var normalized = connectionString.Trim().ToLowerInvariant();
+    return normalized.StartsWith("postgres://")
+           || normalized.StartsWith("postgresql://")
+           || normalized.Contains("host=")
+           || normalized.Contains("username=")
+           || normalized.Contains("userid=")
+           || normalized.Contains("database=");
+}
+
+static string NormalizePostgresConnectionString(string connectionString)
+{
+    if (string.IsNullOrWhiteSpace(connectionString))
+        throw new InvalidOperationException("Connection string do PostgreSQL inválida.");
+
+    var trimmed = connectionString.Trim();
+    if (!(trimmed.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase)
+          || trimmed.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase)))
+    {
+        return trimmed;
+    }
+
+    var uri = new Uri(trimmed);
+    var userInfo = uri.UserInfo.Split(':', 2);
+    var username = Uri.UnescapeDataString(userInfo[0]);
+    var password = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : string.Empty;
+    var database = uri.AbsolutePath.Trim('/');
+
+    var builder = new NpgsqlConnectionStringBuilder
+    {
+        Host = uri.Host,
+        Port = uri.Port > 0 ? uri.Port : 5432,
+        Username = username,
+        Password = password,
+        Database = database,
+        SslMode = SslMode.Require,
+        Pooling = true
+    };
+
+    return builder.ConnectionString;
+}
