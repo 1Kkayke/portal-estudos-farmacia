@@ -37,17 +37,22 @@ namespace PortalEstudos.API.Services
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
-            // Recupera a chave secreta do appsettings.json
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]
-                    ?? throw new InvalidOperationException("JWT Key não configurada")));
+            // Recupera a chave secreta com fallback para variável de ambiente
+            var jwtKey = _configuration["JWT_SECRET_KEY"] ?? _configuration["Jwt:Key"];
+            if (string.IsNullOrWhiteSpace(jwtKey))
+                throw new InvalidOperationException("JWT Key não configurada");
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             // Cria o token com validade de 24 horas
+            var issuer = _configuration["Jwt:Issuer"] ?? "PortalEstudos.API";
+            var audience = _configuration["Jwt:Audience"] ?? "PortalEstudos.Client";
+
             var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
+                issuer: issuer,
+                audience: audience,
                 claims: claims,
                 expires: DateTime.UtcNow.AddHours(24),
                 signingCredentials: creds
