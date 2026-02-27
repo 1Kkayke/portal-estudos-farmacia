@@ -139,12 +139,17 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-// ===== Aplicar Migrations e Seed automaticamente no startup =====
+// ===== Aplicar Migrations no startup =====
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     db.Database.Migrate();
-    StudyContentSeeder.EnsureSeeded(db);
+    
+    // Fazer seeding apenas em desenvolvimento
+    if (app.Environment.IsDevelopment())
+    {
+        StudyContentSeeder.EnsureSeeded(db);
+    }
 }
 
 app.Run();
