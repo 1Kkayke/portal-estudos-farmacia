@@ -38,8 +38,10 @@ export default function DocumentsPage() {
     try {
       const pdfPath = selectedDoc.pdfUrl.replace(/^\/api/, '');
       const res = await api.get(pdfPath, { responseType: 'blob' });
-      const fileName = `documento-${selectedDoc.topicId}-${selectedDoc.id}.pdf`;
-      const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
+      const contentType = res.headers?.['content-type'] || '';
+      const ext = contentType.includes('text/html') ? 'html' : 'pdf';
+      const fileName = `documento-${selectedDoc.topicId}-${selectedDoc.id}.${ext}`;
+      const url = window.URL.createObjectURL(new Blob([res.data], { type: contentType || 'application/octet-stream' }));
       const a = document.createElement('a');
       a.href = url;
       a.download = fileName;
@@ -135,7 +137,7 @@ export default function DocumentsPage() {
                 onClick={handleDownloadPdf}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm hover:bg-indigo-700 active:bg-indigo-800 transition"
               >
-                Baixar PDF
+                Baixar Apostila
               </button>
             </div>
           )}

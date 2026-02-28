@@ -9,6 +9,56 @@ namespace PortalEstudos.API.Services;
 
 public sealed class DocumentPdfService
 {
+        public string BuildPrintableHtml(DocModel doc, string topicName, string topicCategoria = "")
+        {
+                var title = WebUtility.HtmlEncode(doc.Titulo);
+                var topic = WebUtility.HtmlEncode(topicName);
+                var category = WebUtility.HtmlEncode(topicCategoria);
+                var summary = WebUtility.HtmlEncode(doc.Resumo ?? string.Empty);
+                var content = string.IsNullOrWhiteSpace(doc.Conteudo)
+                        ? "<p>Conteúdo indisponível no momento.</p>"
+                        : doc.Conteudo;
+
+                return $@"<!doctype html>
+<html lang='pt-BR'>
+<head>
+    <meta charset='utf-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <title>{title} - Apostila</title>
+    <style>
+        body {{ font-family: Inter, Arial, sans-serif; background: #0b1220; color: #e2e8f0; margin: 0; }}
+        .container {{ max-width: 900px; margin: 0 auto; padding: 24px; }}
+        .header {{ background: linear-gradient(135deg, #1d4ed8, #4338ca); border-radius: 14px; padding: 20px; margin-bottom: 18px; }}
+        .header h1 {{ margin: 6px 0; font-size: 30px; color: #fff; }}
+        .meta {{ font-size: 14px; color: #c7d2fe; }}
+        .summary {{ background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 14px; margin-bottom: 14px; line-height: 1.7; }}
+        article.apostila section {{ background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 14px; margin-bottom: 10px; }}
+        article.apostila h2 {{ color: #fff; font-size: 28px; margin: 0 0 8px; }}
+        article.apostila h3 {{ color: #c7d2fe; margin: 0 0 8px; }}
+        article.apostila p, article.apostila li {{ line-height: 1.7; color: #cbd5e1; }}
+        article.apostila table {{ width: 100%; border-collapse: collapse; margin-top: 8px; }}
+        article.apostila th, article.apostila td {{ border: 1px solid #475569; padding: 8px; text-align: left; }}
+        article.apostila th {{ background: #312e81; color: #e0e7ff; }}
+        @media print {{ body {{ background: #fff; color: #111827; }} .header {{ background: #111827; }} .summary, article.apostila section {{ border-color: #d1d5db; background: #fff; }} article.apostila p, article.apostila li {{ color: #111827; }} }}
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <header class='header'>
+            <div class='meta'>Portal Estudos • {category}</div>
+            <h1>{title}</h1>
+            <div class='meta'>Disciplina: {topic}</div>
+        </header>
+        <section class='summary'>
+            <strong>Resumo</strong>
+            <p>{summary}</p>
+        </section>
+        {content}
+    </div>
+</body>
+</html>";
+        }
+
     public byte[] BuildPdf(DocModel doc, string topicName, string topicCategoria = "")
     {
         QuestPDF.Settings.License = LicenseType.Community;

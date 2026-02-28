@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 using PortalEstudos.API.Data;
 using PortalEstudos.API.DTOs;
 using PortalEstudos.API.Services;
@@ -113,7 +114,15 @@ public class DocumentsController : ControllerBase
         var topicNameClean = string.Join("", doc.Topic.Nome.Split(Path.GetInvalidFileNameChars()));
         var docTitleClean = string.Join("", doc.Titulo.Split(Path.GetInvalidFileNameChars()));
         var fileName = $"{topicNameClean} - {docTitleClean}.pdf";
-        
+
+        if (bytes.Length < 5000)
+        {
+            var html = _pdf.BuildPrintableHtml(doc, doc.Topic.Nome, doc.Topic.Categoria);
+            var htmlBytes = Encoding.UTF8.GetBytes(html);
+            var htmlFileName = $"{topicNameClean} - {docTitleClean}.html";
+            return File(htmlBytes, "text/html; charset=utf-8", htmlFileName);
+        }
+
         return File(bytes, "application/pdf", fileName);
     }
 }
