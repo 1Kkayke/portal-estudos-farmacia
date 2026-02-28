@@ -120,3 +120,74 @@ html {
   50% { box-shadow: 0 0 0 8px rgba(99, 102, 241, 0); }
 }
 .animate-pulse-glow { animation: pulse-glow 2s infinite; }
+
+/* ===== Apostila profissional ===== */
+.apostila {
+  color: #e2e8f0;
+}
+
+.apostila > header {
+  background: linear-gradient(135deg, rgba(59,130,246,0.10), rgba(99,102,241,0.10));
+  border: 1px solid rgba(99,102,241,0.25);
+  border-radius: 0.9rem;
+  padding: 1rem 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.apostila h2 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #f8fafc;
+  margin: 0.25rem 0 0.5rem;
+}
+
+.apostila h3 {
+  font-size: 1.06rem;
+  font-weight: 700;
+  color: #c7d2fe;
+  margin: 0 0 0.6rem;
+}
+
+.apostila section {
+  background: rgba(15, 23, 42, 0.45);
+  border: 1px solid rgba(51, 65, 85, 0.7);
+  border-radius: 0.8rem;
+  padding: 0.95rem 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.apostila p,
+.apostila li {
+  line-height: 1.75;
+  color: #cbd5e1;
+}
+
+.apostila ul,
+.apostila ol {
+  padding-left: 1.2rem;
+}
+
+.apostila table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.apostila thead {
+  background: rgba(79, 70, 229, 0.25);
+}
+
+.apostila th,
+.apostila td {
+  border: 1px solid rgba(71, 85, 105, 0.75);
+  padding: 0.6rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.apostila th {
+  color: #e0e7ff;
+  font-weight: 700;
+}
