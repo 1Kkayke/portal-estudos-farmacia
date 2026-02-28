@@ -158,67 +158,129 @@ public static partial class StudyContentSeeder
         db.SaveChanges();
     }
 
+    public static int RefreshDocumentContents(ApplicationDbContext db)
+    {
+        var topics = db.Topics.ToDictionary(t => t.Id, t => t.Nome);
+        var documents = db.Documents.ToList();
+
+        foreach (var doc in documents)
+        {
+            var topicName = topics.TryGetValue(doc.TopicId, out var name) ? name : "Disciplina";
+            doc.Conteudo = GenerateDocHtml(doc.TopicId, topicName, doc.Titulo, doc.Resumo, doc.Ordem);
+        }
+
+        db.SaveChanges();
+        return documents.Count;
+    }
+
     // ═══════════════════════════════════════════════════
     //  HTML CONTENT GENERATOR
     // ═══════════════════════════════════════════════════
 
-    private static string GenerateDocHtml(int topicId, string topicName, string titulo, string resumo, int idx)
+        private static string GenerateDocHtml(int topicId, string topicName, string titulo, string resumo, int idx)
     {
+                var foco = idx % 2 == 0 ? "aplicação clínica" : "base conceitual";
+
                 return $@"
-<h2>{titulo}</h2>
-<p class='lead'>{resumo}</p>
+<article class='apostila'>
+    <header>
+        <p><strong>Portal Estudos • {topicName}</strong></p>
+        <h2>{titulo}</h2>
+        <p><em>{resumo}</em></p>
+        <p><strong>Unidade de estudo:</strong> {idx} | <strong>Foco:</strong> {foco}</p>
+    </header>
 
-<h3>Contexto em {topicName}</h3>
-<p>Este documento aborda <strong>{titulo.ToLower()}</strong> no contexto de <strong>{topicName}</strong>, conectando conceitos teoricos essenciais com aplicacoes praticas na rotina farmaceutica. O conteudo foi estruturado no formato de apostila academica, facilitando a leitura dirigida e revisao sistematica.</p>
+    <section>
+        <h3>1. Introdução</h3>
+        <p>Esta apostila foi elaborada para apoiar estudantes de Farmácia em uma trilha de aprendizado progressiva. O tema <strong>{titulo.ToLower()}</strong> é apresentado de forma objetiva, com linguagem acadêmica, conexão com prática profissional e direcionamento para avaliações.</p>
+        <p>No contexto de <strong>{topicName}</strong>, o domínio desse conteúdo contribui para decisões seguras, interpretação técnica adequada e comunicação científica consistente.</p>
+    </section>
 
-<h3>Objetivos de aprendizagem</h3>
-<ul>
-<li>Compreender os principios basicos de <strong>{titulo.ToLower()}</strong> dentro da area de {topicName}</li>
-<li>Relacionar conceitos teoricos com a pratica na area de {topicName}</li>
-<li>Aplicar o conteudo em situacoes clinicas e laboratoriais especificas</li>
-<li>Dominar termos tecnicos e definicoes cobrados em avaliacoes</li>
-</ul>
+    <section>
+        <h3>2. Objetivos de aprendizagem</h3>
+        <ul>
+            <li>Definir os conceitos centrais relacionados a <strong>{titulo.ToLower()}</strong>.</li>
+            <li>Diferenciar critérios, classificações e aplicações essenciais do tema.</li>
+            <li>Correlacionar teoria com situações clínicas, laboratoriais e de atenção farmacêutica.</li>
+            <li>Resolver questões interpretativas com base em raciocínio técnico.</li>
+        </ul>
+    </section>
 
-<h3>Resumo teorico</h3>
-<p>O tema <strong>{titulo.ToLower()}</strong> e fundamental para a compreensao de {topicName}. Este material sintetiza os principais conceitos, classificacoes e aplicacoes praticas, sendo essencial para a formacao do profissional farmaceutico e frequentemente abordado em disciplinas correlatas e avaliacoes.</p>
+    <section>
+        <h3>3. Fundamentos teóricos</h3>
+        <p>O estudo de <strong>{titulo.ToLower()}</strong> envolve compreensão de mecanismos, terminologia e variáveis que influenciam desfechos terapêuticos e analíticos. O estudante deve construir repertório técnico para interpretar protocolos, discutir casos e justificar escolhas com base em evidências.</p>
+        <p>Além da memorização de termos, é indispensável compreender relações de causa e efeito, limitações metodológicas e impacto prático no cuidado em saúde.</p>
+    </section>
 
-<h3>Estrutura do conteudo</h3>
-<ol>
-<li><strong>Introducao</strong> e panorama do tema</li>
-<li><strong>Conceitos-chave</strong> e terminologia tecnica</li>
-<li><strong>Classificacoes</strong> e criterios de organizacao</li>
-<li><strong>Aplicacoes</strong> na pratica clinica e laboratorial</li>
-</ol>
+    <section>
+        <h3>4. Quadro de síntese</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Eixo</th>
+                    <th>O que dominar</th>
+                    <th>Aplicação prática</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Conceitos</td>
+                    <td>Definições operacionais, termos técnicos e limites conceituais.</td>
+                    <td>Padronização da linguagem em provas, relatórios e discussões de caso.</td>
+                </tr>
+                <tr>
+                    <td>Classificações</td>
+                    <td>Critérios de categorização e diferenças entre grupos.</td>
+                    <td>Escolha de condutas e interpretação correta de cenários clínicos.</td>
+                </tr>
+                <tr>
+                    <td>Raciocínio aplicado</td>
+                    <td>Integração entre teoria, dados do paciente e protocolo institucional.</td>
+                    <td>Tomada de decisão mais segura e justificável tecnicamente.</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
 
-<h3>Quadro de referencia</h3>
-<table>
-    <thead>
-        <tr><th>Topico</th><th>Resumo</th></tr>
-    </thead>
-    <tbody>
-        <tr><td>Definicoes</td><td>Termos essenciais e conceito operacional</td></tr>
-        <tr><td>Classificacoes</td><td>Principais grupos e criterios</td></tr>
-        <tr><td>Aplicacoes</td><td>Uso clinico e correlacoes praticas</td></tr>
-    </tbody>
-</table>
+    <section>
+        <h3>5. Roteiro de estudo dirigido</h3>
+        <ol>
+            <li><strong>Leitura ativa:</strong> destaque conceitos, critérios e exceções.</li>
+            <li><strong>Mapa mental:</strong> organize o conteúdo em blocos de causa-efeito.</li>
+            <li><strong>Questões:</strong> resolva exercícios e registre os erros por tema.</li>
+            <li><strong>Revisão espaçada:</strong> retome pontos críticos em 24h, 7 dias e 15 dias.</li>
+        </ol>
+    </section>
 
-<h3>Aplicacoes academicas</h3>
-<p>O aluno deve ser capaz de interpretar o tema em estudos de caso, exercicios de laboratorio e cenarios clinicos simulados. Recomenda-se revisao com questoes e mapas mentais.</p>
+    <section>
+        <h3>6. Situações-problema para treinamento</h3>
+        <ul>
+            <li>Explique, com linguagem técnica, como {titulo.ToLower()} influencia decisões em {topicName}.</li>
+            <li>Compare duas condutas possíveis e justifique a escolha com base em critérios clínicos.</li>
+            <li>Identifique erros comuns de interpretação e proponha estratégias de prevenção.</li>
+            <li>Relacione este tema com outra disciplina para fortalecer visão integrada.</li>
+        </ul>
+    </section>
 
-<h3>Pontos-chave para revisao</h3>
-<ul>
-<li>Dominar definicoes e classificacoes</li>
-<li>Relacionar o tema a outras disciplinas</li>
-<li>Identificar aplicacoes clinicas relevantes</li>
-<li>Resolver questoes de prova com base no conteudo</li>
-</ul>
+    <section>
+        <h3>7. Checklist de revisão pré-prova</h3>
+        <ul>
+            <li>Consigo definir os conceitos sem consultar material?</li>
+            <li>Consigo aplicar critérios de classificação em exemplos reais?</li>
+            <li>Consigo justificar condutas com raciocínio técnico e segurança?</li>
+            <li>Consigo identificar pegadinhas frequentes em questões objetivas?</li>
+        </ul>
+    </section>
 
-<h3>Leituras recomendadas</h3>
-<ul>
-<li>Diretrizes e protocolos oficiais relacionados ao tema</li>
-<li>Livros base da disciplina e artigos de revisao</li>
-<li>Material complementar disponibilizado pelo docente</li>
-</ul>
+    <section>
+        <h3>8. Referências sugeridas</h3>
+        <ul>
+            <li>Livros-base de {topicName} recomendados no plano de ensino da disciplina.</li>
+            <li>Protocolos e diretrizes oficiais atualizados de órgãos de saúde.</li>
+            <li>Artigos de revisão para aprofundamento e contextualização clínica.</li>
+        </ul>
+    </section>
+</article>
 ";
     }
 

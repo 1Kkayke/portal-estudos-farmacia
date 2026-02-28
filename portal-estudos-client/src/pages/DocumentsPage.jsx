@@ -33,16 +33,6 @@ export default function DocumentsPage() {
     return `${apiBase}${path}`;
   };
 
-  const htmlToText = (html) => {
-    if (!html) return '';
-    try {
-      const doc = new DOMParser().parseFromString(html, 'text/html');
-      return (doc.body?.textContent || '').replace(/\s+/g, ' ').trim();
-    } catch {
-      return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-    }
-  };
-
   const handleDownloadPdf = async () => {
     if (!selectedDoc?.pdfUrl) return;
     try {
@@ -108,23 +98,6 @@ export default function DocumentsPage() {
     const youtubeQuery = encodeURIComponent(`${selectedDoc.titulo} ${topic?.nome ?? ''} farmacia aula`);
     const youtubeEmbed = `https://www.youtube.com/embed?listType=search&list=${youtubeQuery}`;
     const pdfLink = resolveDocUrl(selectedDoc.pdfUrl || '');
-    const plainContent = htmlToText(selectedDoc.conteudo);
-    const pageSnippets = plainContent.split('. ').filter(Boolean).slice(0, 12);
-    const pageData = [
-      {
-        title: 'Resumo da apostila',
-        body: `${selectedDoc.resumo} ${pageSnippets.slice(0, 2).join('. ')}.`,
-      },
-      {
-        title: 'Conteudo dirigido',
-        body: `${pageSnippets.slice(2, 6).join('. ')}.`,
-      },
-      {
-        title: 'Pontos-chave',
-        body: 'Definicoes essenciais, classificacoes principais, aplicacoes clinicas e revisao para prova.',
-      },
-    ];
-
     return (
       <div className="p-4 md:p-6 max-w-4xl mx-auto animate-fadeIn">
         <button
@@ -164,36 +137,6 @@ export default function DocumentsPage() {
               >
                 Baixar PDF
               </button>
-            </div>
-          )}
-
-          {selectedDoc.paginas?.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-lg font-semibold text-white mb-3">Apostila (paginas)</h2>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {selectedDoc.paginas.map((p, i) => (
-                  <div
-                    key={`${selectedDoc.id}-p-${i}`}
-                    className="relative rounded-xl border border-slate-700/50 bg-slate-900/50 overflow-hidden"
-                  >
-                    <img
-                      src={resolveDocUrl(p)}
-                      alt={`Pagina ${i + 1}`}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-white/85 backdrop-blur-[1px] p-4">
-                      <p className="text-xs text-slate-500">Pagina {i + 1}</p>
-                      <h3 className="text-sm font-semibold text-slate-900 mb-2">
-                        {pageData[i % pageData.length].title}
-                      </h3>
-                      <p className="text-xs text-slate-700 leading-relaxed line-clamp-6">
-                        {pageData[i % pageData.length].body}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
             </div>
           )}
 

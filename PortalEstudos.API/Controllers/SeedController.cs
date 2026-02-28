@@ -77,6 +77,43 @@ public class SeedController : ControllerBase
     }
 
     /// <summary>
+    /// Atualiza o conteúdo HTML das apostilas já existentes sem apagar dados do banco.
+    /// Requer header: X-Admin-Key com valor correto.
+    /// </summary>
+    [HttpPost("refresh-documents")]
+    public ActionResult<object> RefreshDocuments([FromHeader(Name = "X-Admin-Key")] string adminKey)
+    {
+        try
+        {
+            var expectedKey = _config["AdminKey"] ?? _config["JWT_SECRET_KEY"] ?? "default-key";
+
+            if (string.IsNullOrEmpty(adminKey) || !adminKey.Equals(expectedKey, StringComparison.Ordinal))
+            {
+                _logger.LogWarning("Tentativa de refresh de apostilas com chave inválida");
+                return Unauthorized(new { message = "Chave de administração inválida" });
+            }
+
+            if (!_db.Documents.Any())
+            {
+                return Ok(new { message = "Nenhuma apostila encontrada para atualização", updated = 0 });
+            }
+
+            var updated = StudyContentSeeder.RefreshDocumentContents(_db);
+
+            return Ok(new
+            {
+                message = "Apostilas atualizadas com sucesso",
+                updated
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao atualizar apostilas");
+            return StatusCode(500, new { message = "Erro ao atualizar apostilas", error = ex.Message });
+        }
+    }
+
+    /// <summary>
     /// Retorna status atual do banco de dados
     /// </summary>
     [HttpGet("status")]
