@@ -103,6 +103,7 @@ builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddSingleton<DocumentPdfService>();
 builder.Services.AddSingleton<ApostilaHtmlService>();
+builder.Services.AddSingleton<PremiumApostilaHtmlService>();
 builder.Services.AddHttpClient<TranslationService>();
 builder.Services.AddHttpClient<NewsFeedService>()
     .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
@@ -126,11 +127,30 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend", policy =>
     {
         var configuredOrigins = builder.Configuration["CORS_ALLOWED_ORIGINS"];
-        var origins = string.IsNullOrWhiteSpace(configuredOrigins)
-            ? new[] { "http://localhost:5173", "http://localhost:5174", "http://localhost:3000" }
+        var explicitOrigins = string.IsNullOrWhiteSpace(configuredOrigins)
+            ? Array.Empty<string>()
             : configuredOrigins.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
 
-        policy.WithOrigins(origins)
+        var allowedOrigins = new HashSet<string>(explicitOrigins, StringComparer.OrdinalIgnoreCase);
+
+        policy.SetIsOriginAllowed(origin =>
+              {
+                  if (string.IsNullOrWhiteSpace(origin))
+                      return false;
+
+                  if (allowedOrigins.Contains(origin))
+                      return true;
+
+                  if (!Uri.TryCreate(origin, UriKind.Absolute, out var uri))
+                      return false;
+
+                  var host = uri.Host.ToLowerInvariant();
+                  var isLocalhost = host == "localhost" || host == "127.0.0.1";
+                  var isPreviewHost = host.EndsWith(".vercel.app", StringComparison.OrdinalIgnoreCase)
+                                      || host.EndsWith(".netlify.app", StringComparison.OrdinalIgnoreCase);
+
+                  return isLocalhost || isPreviewHost;
+              })
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();

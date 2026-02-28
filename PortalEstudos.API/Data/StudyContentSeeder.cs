@@ -1,6 +1,7 @@
 namespace PortalEstudos.API.Data;
 
 using PortalEstudos.API.Models;
+using PortalEstudos.API.Services;
 
 public static partial class StudyContentSeeder
 {
@@ -181,107 +182,53 @@ public static partial class StudyContentSeeder
     {
                 var foco = idx % 2 == 0 ? "aplicação clínica" : "base conceitual";
 
-                return $@"
-<article class='apostila'>
-    <header>
-        <p><strong>Portal Estudos • {topicName}</strong></p>
-        <h2>{titulo}</h2>
-        <p><em>{resumo}</em></p>
-        <p><strong>Unidade de estudo:</strong> {idx} | <strong>Foco:</strong> {foco}</p>
-    </header>
+                // Use PedagogicContentGenerator for unique, discipline-specific content
+                // Wraps the distinctive content in a complete HTML structure
+                var distinctiveBodyContent = PedagogicContentGenerator.GenerateDistinctiveContent(topicId, topicName, titulo, idx);
+                return $@"<!DOCTYPE html>
+        <html lang=""pt-BR"">
+        <head>
+            <meta charset=""UTF-8"">
+            <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+            <title>{System.Net.WebUtility.HtmlEncode(titulo)}</title>
+            <style>
+                * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+                body {{ font-family: 'Inter', system-ui, sans-serif; line-height: 1.6; color: #1f2937; background-color: #f9fafb; }}
+                article {{ max-width: 800px; margin: 0 auto; padding: 40px 20px; background: white; }}
+                article > header {{ margin-bottom: 40px; border-bottom: 2px solid #e5e7eb; padding-bottom: 20px; }}
+                article > header h2 {{ font-size: 2em; margin: 15px 0; color: #111827; }}
+                article > header p {{ font-size: 0.95em; color: #6b7280; margin: 8px 0; }}
+                section {{ margin: 30px 0; }}
+                section h3 {{ font-size: 1.3em; margin: 20px 0 10px; color: #374151; border-left: 4px solid #3b82f6; padding-left: 15px; }}
+                section h4 {{ font-size: 1.1em; margin: 15px 0 8px; color: #4b5563; }}
+                p {{ margin: 12px 0; text-align: justify; }}
+                ul, ol {{ margin: 12px 0 12px 30px; }}
+                li {{ margin: 8px 0; }}
+                table {{ width: 100%; margin: 15px 0; border-collapse: collapse; }}
+                th, td {{ padding: 12px; text-align: left; border: 1px solid #d1d5db; }}
+                th {{ background-color: #f3f4f6; font-weight: 600; }}
+                tr:nth-child(even) {{ background-color: #f9fafb; }}
+                .callout {{ padding: 15px; margin: 20px 0; border-left: 4px solid; border-radius: 4px; }}
+                .callout.info {{ border-color: #3b82f6; background-color: #eff6ff; }}
+                .callout.warning {{ border-color: #f59e0b; background-color: #fffbeb; }}
+                .callout.success {{ border-color: #10b981; background-color: #f0fdf4; }}
+                .callout-title {{ font-weight: 600; margin-bottom: 8px; }}
+                strong {{ color: #1f2937; }}
+                em {{ color: #6b7280; }}
+            </style>
+        </head>
+        <body>
+            <article>
+                <header>
+                    <p><strong>Portal Estudos • {System.Net.WebUtility.HtmlEncode(topicName)}</strong></p>
+                    <h2>{System.Net.WebUtility.HtmlEncode(titulo)}</h2>
+                    <p><em>{System.Net.WebUtility.HtmlEncode(resumo)}</em></p>
+                </header>
+                {distinctiveBodyContent}
+            </article>
+        </body>
+        </html>";
 
-    <section>
-        <h3>1. Introdução</h3>
-        <p>Esta apostila foi elaborada para apoiar estudantes de Farmácia em uma trilha de aprendizado progressiva. O tema <strong>{titulo.ToLower()}</strong> é apresentado de forma objetiva, com linguagem acadêmica, conexão com prática profissional e direcionamento para avaliações.</p>
-        <p>No contexto de <strong>{topicName}</strong>, o domínio desse conteúdo contribui para decisões seguras, interpretação técnica adequada e comunicação científica consistente.</p>
-    </section>
-
-    <section>
-        <h3>2. Objetivos de aprendizagem</h3>
-        <ul>
-            <li>Definir os conceitos centrais relacionados a <strong>{titulo.ToLower()}</strong>.</li>
-            <li>Diferenciar critérios, classificações e aplicações essenciais do tema.</li>
-            <li>Correlacionar teoria com situações clínicas, laboratoriais e de atenção farmacêutica.</li>
-            <li>Resolver questões interpretativas com base em raciocínio técnico.</li>
-        </ul>
-    </section>
-
-    <section>
-        <h3>3. Fundamentos teóricos</h3>
-        <p>O estudo de <strong>{titulo.ToLower()}</strong> envolve compreensão de mecanismos, terminologia e variáveis que influenciam desfechos terapêuticos e analíticos. O estudante deve construir repertório técnico para interpretar protocolos, discutir casos e justificar escolhas com base em evidências.</p>
-        <p>Além da memorização de termos, é indispensável compreender relações de causa e efeito, limitações metodológicas e impacto prático no cuidado em saúde.</p>
-    </section>
-
-    <section>
-        <h3>4. Quadro de síntese</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Eixo</th>
-                    <th>O que dominar</th>
-                    <th>Aplicação prática</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Conceitos</td>
-                    <td>Definições operacionais, termos técnicos e limites conceituais.</td>
-                    <td>Padronização da linguagem em provas, relatórios e discussões de caso.</td>
-                </tr>
-                <tr>
-                    <td>Classificações</td>
-                    <td>Critérios de categorização e diferenças entre grupos.</td>
-                    <td>Escolha de condutas e interpretação correta de cenários clínicos.</td>
-                </tr>
-                <tr>
-                    <td>Raciocínio aplicado</td>
-                    <td>Integração entre teoria, dados do paciente e protocolo institucional.</td>
-                    <td>Tomada de decisão mais segura e justificável tecnicamente.</td>
-                </tr>
-            </tbody>
-        </table>
-    </section>
-
-    <section>
-        <h3>5. Roteiro de estudo dirigido</h3>
-        <ol>
-            <li><strong>Leitura ativa:</strong> destaque conceitos, critérios e exceções.</li>
-            <li><strong>Mapa mental:</strong> organize o conteúdo em blocos de causa-efeito.</li>
-            <li><strong>Questões:</strong> resolva exercícios e registre os erros por tema.</li>
-            <li><strong>Revisão espaçada:</strong> retome pontos críticos em 24h, 7 dias e 15 dias.</li>
-        </ol>
-    </section>
-
-    <section>
-        <h3>6. Situações-problema para treinamento</h3>
-        <ul>
-            <li>Explique, com linguagem técnica, como {titulo.ToLower()} influencia decisões em {topicName}.</li>
-            <li>Compare duas condutas possíveis e justifique a escolha com base em critérios clínicos.</li>
-            <li>Identifique erros comuns de interpretação e proponha estratégias de prevenção.</li>
-            <li>Relacione este tema com outra disciplina para fortalecer visão integrada.</li>
-        </ul>
-    </section>
-
-    <section>
-        <h3>7. Checklist de revisão pré-prova</h3>
-        <ul>
-            <li>Consigo definir os conceitos sem consultar material?</li>
-            <li>Consigo aplicar critérios de classificação em exemplos reais?</li>
-            <li>Consigo justificar condutas com raciocínio técnico e segurança?</li>
-            <li>Consigo identificar pegadinhas frequentes em questões objetivas?</li>
-        </ul>
-    </section>
-
-    <section>
-        <h3>8. Referências sugeridas</h3>
-        <ul>
-            <li>Livros-base de {topicName} recomendados no plano de ensino da disciplina.</li>
-            <li>Protocolos e diretrizes oficiais atualizados de órgãos de saúde.</li>
-            <li>Artigos de revisão para aprofundamento e contextualização clínica.</li>
-        </ul>
-    </section>
-</article>
-";
     }
 
     // ═══════════════════════════════════════════════════

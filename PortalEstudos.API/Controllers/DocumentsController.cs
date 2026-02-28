@@ -16,12 +16,14 @@ public class DocumentsController : ControllerBase
     private readonly ApplicationDbContext _db;
     private readonly DocumentPdfService _pdf;
     private readonly ApostilaHtmlService _html;
+    private readonly PremiumApostilaHtmlService _premium;
     
-    public DocumentsController(ApplicationDbContext db, DocumentPdfService pdf, ApostilaHtmlService html)
+    public DocumentsController(ApplicationDbContext db, DocumentPdfService pdf, ApostilaHtmlService html, PremiumApostilaHtmlService premium)
     {
         _db = db;
         _pdf = pdf;
         _html = html;
+        _premium = premium;
     }
 
     private static readonly string[] PagesA =
@@ -141,6 +143,21 @@ public class DocumentsController : ControllerBase
         if (doc is null) return NotFound();
 
         var html = _html.GenerateApostilaHtml(doc, doc.Topic);
+        return Content(html, "text/html; charset=utf-8");
+    }
+
+    /// <summary>Retorna apostila premium com design avançado, animações e layout profissional.</summary>
+    [HttpGet("{id}/premium")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetPremiumApostila(int topicId, int id)
+    {
+        var doc = await _db.Documents
+            .Include(d => d.Topic)
+            .FirstOrDefaultAsync(d => d.TopicId == topicId && d.Id == id);
+
+        if (doc is null) return NotFound();
+
+        var html = _premium.GeneratePremiumApostilaHtml(doc, doc.Topic);
         return Content(html, "text/html; charset=utf-8");
     }
 }

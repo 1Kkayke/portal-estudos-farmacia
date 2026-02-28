@@ -40,11 +40,17 @@ public class SeedController : ControllerBase
                 return Unauthorized(new { message = "Chave de administração inválida" });
             }
 
-            // Verificar se já existe conteúdo
+            // Se já existe conteúdo, faz refresh dos HTMLs das apostilas
             if (_db.Topics.Any())
             {
-                _logger.LogInformation("Conteúdo já foi seeded anteriormente");
-                return Ok(new { message = "Conteúdo já existe no banco de dados", skipped = true });
+                var updated = StudyContentSeeder.RefreshDocumentContents(_db);
+                _logger.LogInformation("Conteúdo já existente detectado. Apostilas atualizadas: {Updated}", updated);
+                return Ok(new
+                {
+                    message = "Conteúdo já existia; apostilas atualizadas com sucesso",
+                    skippedSeed = true,
+                    refreshedDocuments = updated
+                });
             }
 
             _logger.LogInformation("Iniciando seeding de conteúdo...");
