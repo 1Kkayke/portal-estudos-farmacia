@@ -1,0 +1,23 @@
+HTTP/1.1 200 OK
+Date: Sat, 28 Feb 2026 12:42:30 GMT
+Content-Type: application/pdf
+Content-Length: 4090
+Connection: keep-alive
+CF-RAY: 9d500090df52bdb3-GIG
+Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate
+content-disposition: attachment; filename="Farmacologia Geral - Introdu__o _ Farmacologia.pdf"; filename*=UTF-8''Farmacologia%20Geral%20-%20Introdu%C3%A7%C3%A3o%20%C3%A0%20Farmacologia.pdf
+content-security-policy: default-src 'self'; script-src 'self' cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' cdnjs.cloudflare.com; img-src 'self' data: https:; font-src 'self' data: cdnjs.cloudflare.com; connect-src 'self' https://www.youtube.com https://www.googleapis.com; media-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'self'
+expires: 0
+permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()
+pragma: no-cache
+referrer-policy: strict-origin-when-cross-origin
+rndr-id: 4f9c1aad-6e9a-4b81
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+x-render-origin-server: Kestrel
+x-xss-protection: 1; mode=block
+cf-cache-status: DYNAMIC
+Server: cloudflare
+alt-svc: h3=":443"; ma=86400
+

@@ -15,10 +15,13 @@ public class DocumentsController : ControllerBase
 {
     private readonly ApplicationDbContext _db;
     private readonly DocumentPdfService _pdf;
-    public DocumentsController(ApplicationDbContext db, DocumentPdfService pdf)
+    private readonly ApostilaHtmlService _html;
+    
+    public DocumentsController(ApplicationDbContext db, DocumentPdfService pdf, ApostilaHtmlService html)
     {
         _db = db;
         _pdf = pdf;
+        _html = html;
     }
 
     private static readonly string[] PagesA =
@@ -124,5 +127,20 @@ public class DocumentsController : ControllerBase
         }
 
         return File(bytes, "application/pdf", fileName);
+    }
+
+    /// <summary>Retorna apostila profissional em HTML para visualização/impressão.</summary>
+    [HttpGet("{id}/apostila")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetApostila(int topicId, int id)
+    {
+        var doc = await _db.Documents
+            .Include(d => d.Topic)
+            .FirstOrDefaultAsync(d => d.TopicId == topicId && d.Id == id);
+
+        if (doc is null) return NotFound();
+
+        var html = _html.GenerateApostilaHtml(doc, doc.Topic);
+        return Content(html, "text/html; charset=utf-8");
     }
 }

@@ -132,13 +132,27 @@ export default function DocumentsPage() {
           <p className="text-slate-400 text-sm mb-8">{selectedDoc.resumo}</p>
 
           {pdfLink && (
-            <div className="mb-6">
-              <button
-                onClick={handleDownloadPdf}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm hover:bg-indigo-700 active:bg-indigo-800 transition"
-              >
-                Baixar Apostila
-              </button>
+            <div className="space-y-3 mb-6">
+              <div className="flex gap-2 flex-wrap">
+                <button
+                  onClick={() => {
+                    const apostilaUrl = `${apiOrigin}/api/topics/${topicId}/documents/${selectedDoc.id}/apostila`;
+                    window.open(apostilaUrl, '_blank', 'noopener,noreferrer');
+                  }}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm hover:bg-indigo-700 active:bg-indigo-800 transition"
+                >
+                  <BookOpen className="w-4 h-4" />
+                  Abrir Apostila
+                </button>
+                <button
+                  onClick={handleDownloadPdf}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-700 text-white text-sm hover:bg-slate-600 active:bg-slate-800 transition"
+                >
+                  <FileText className="w-4 h-4" />
+                  Baixar
+                </button>
+              </div>
+              <p className="text-slate-500 text-xs">Clique em "Abrir Apostila" para visualizar em nova aba ou "Baixar" para salvar o arquivo.</p>
             </div>
           )}
 

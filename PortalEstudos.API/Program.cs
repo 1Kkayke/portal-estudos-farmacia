@@ -102,6 +102,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddSingleton<DocumentPdfService>();
+builder.Services.AddSingleton<ApostilaHtmlService>();
 builder.Services.AddHttpClient<TranslationService>();
 builder.Services.AddHttpClient<NewsFeedService>()
     .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
