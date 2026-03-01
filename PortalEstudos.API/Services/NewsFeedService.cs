@@ -18,7 +18,7 @@ public sealed class NewsFeedService
     private static readonly SemaphoreSlim _lock = new(1, 1);
     private static List<BlogArticle>? _cache;
     private static DateTime _lastFetch = DateTime.MinValue;
-    private static readonly TimeSpan CacheTtl = TimeSpan.FromMinutes(30);
+    private static readonly TimeSpan CacheTtl = TimeSpan.FromHours(2); // ⚡ 30min → 2h para menos requisições externas
 
     // ── PubMed E-utilities (free, no key required for ≤3 req/s) ──
     private const string PubMedSearch =
@@ -38,6 +38,17 @@ public sealed class NewsFeedService
         ("diabetes+management+insulin", "Endocrinologia"),
         ("mental+health+psychiatric+medication", "Psicofarmacologia"),
         ("vaccine+immunization+safety", "Imunologia"),
+        // ⚡ Novas queries expandidas (10 → 20)
+        ("pharmacokinetics+pharmacodynamics", "Ciências Farmacêuticas"),
+        ("drug+interactions+metabolism", "Farmacologia"),
+        ("adverse+effects+toxicity", "Farmacologia"),
+        ("personalized+medicine+genomics", "Medicina Personalizada"),
+        ("drug+efficacy+clinical+trials", "Farmácia Clínica"),
+        ("antibiotic+stewardship", "Microbiologia"),
+        ("immunotherapy+vaccines", "Imunologia"),
+        ("epigenetics+gene+therapy", "Biotecnologia"),
+        ("drug+repositioning+repurposing", "Inovação Farmacêutica"),
+        ("precision+pharmacology+precision+medicine", "Ciências Farmacêuticas"),
     };
 
     // ── RSS / Atom feeds ──
@@ -60,6 +71,20 @@ public sealed class NewsFeedService
         ("https://www.nlm.nih.gov/databases/alerts/medlineplus_health_topics.xml", "NIH MedlinePlus", "Saúde Clínica"),
         ("https://feeds.aap.org/research/latest/feed.rss", "AAP - Pediatria", "Pediatria"),
         ("https://feeds.nature.com/nature/rss/current", "Nature Medicine", "Pesquisa Médica"),
+        
+        // ⚡ Novos feeds expandidos (10 → 20+)
+        ("https://rss.sciencedaily.com/health_medicine/heart_disease.xml", "ScienceDaily - Cardiologia", "Cardiologia"),
+        ("https://rss.sciencedaily.com/health_medicine/cancer.xml", "ScienceDaily - Câncer", "Oncologia"),
+        ("https://feeds.bmj.com/bmj/news-and-analysis/rss/", "BMJ - Medical Journal", "Pesquisa Médica"),
+        ("https://www.thelancet.com/rss", "The Lancet", "Pesquisa Médica"),
+        ("https://feeds.nature.com/nature/rss/current", "Nature - All Articles", "Pesquisa Médica"),
+        ("https://rss.sciencedaily.com/health_medicine/vaccines.xml", "ScienceDaily - Vacinas", "Imunologia"),
+        ("https://rss.sciencedaily.com/health_medicine/infectious_diseases.xml", "ScienceDaily - Doenças Infecciosas", "Microbiologia"),
+        ("https://rss.sciencedaily.com/health_medicine/microbiology.xml", "ScienceDaily - Microbiologia", "Microbiologia"),
+        ("https://rss.sciencedaily.com/health_medicine/genetics.xml", "ScienceDaily - Genética", "Biotecnologia"),
+        ("https://rss.sciencedaily.com/health_medicine/diagnostics.xml", "ScienceDaily - Diagnóstico", "Análises Clínicas"),
+        ("https://rss.sciencedaily.com/health_medicine/pharmacology.xml", "ScienceDaily - Farmacologia", "Farmacologia"),
+        ("https://feeds.jaha.ahajournals.org/", "AHA Journals - Cardiologia", "Cardiologia"),
     };
 
     // ── Category → image mapping (Unsplash, fallback) ──

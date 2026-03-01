@@ -34,6 +34,7 @@ namespace PortalEstudos.API.Controllers
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
             var topics = await _context.Topics
+                .AsNoTracking() // ⚡ Sem rastreamento para queries read-only
                 .Select(t => new TopicDto
                 {
                     Id = t.Id,
@@ -55,6 +56,7 @@ namespace PortalEstudos.API.Controllers
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
             var topic = await _context.Topics
+                .AsNoTracking() // ⚡ Sem rastreamento para queries read-only
                 .Where(t => t.Id == id)
                 .Select(t => new TopicDto
                 {

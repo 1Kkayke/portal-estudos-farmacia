@@ -48,6 +48,8 @@ namespace PortalEstudos.API.Data
                 entity.HasKey(t => t.Id);
                 entity.Property(t => t.Nome).IsRequired().HasMaxLength(150);
                 entity.Property(t => t.Descricao).HasMaxLength(500);
+                // ⚡ Índice de performance para filtros por categoria
+                entity.HasIndex(t => t.Categoria);
             });
 
             // ---- Configuração do Note ----
@@ -68,6 +70,10 @@ namespace PortalEstudos.API.Data
                       .WithMany(u => u.Notes)
                       .HasForeignKey(n => n.UserId)
                       .OnDelete(DeleteBehavior.Cascade);
+
+                // ⚡ Índices de performance para queries por usuário e tópico
+                entity.HasIndex(n => new { n.UserId, n.TopicId });
+                entity.HasIndex(n => n.TopicId);
             });
 
             // ---- Seed: 42 Tópicos de Farmácia organizados por categoria ----
@@ -137,6 +143,8 @@ namespace PortalEstudos.API.Data
                       .WithMany(t => t.Documents)
                       .HasForeignKey(d => d.TopicId)
                       .OnDelete(DeleteBehavior.Cascade);
+                // ⚡ Índice para buscas por título
+                entity.HasIndex(d => d.Titulo);
             });
 
             // ---- Configuração do Question ----
@@ -148,6 +156,8 @@ namespace PortalEstudos.API.Data
                       .WithMany(t => t.Questions)
                       .HasForeignKey(q => q.TopicId)
                       .OnDelete(DeleteBehavior.Cascade);
+                // ⚡ Índice para queries de questões por tópico
+                entity.HasIndex(q => q.TopicId);
             });
 
             builder.Entity<QuestionOption>(entity =>
@@ -180,6 +190,8 @@ namespace PortalEstudos.API.Data
                       .WithMany()
                       .HasForeignKey(a => a.UserId)
                       .OnDelete(DeleteBehavior.Cascade);
+                // ⚡ Índices para queries por usuário
+                entity.HasIndex(a => a.UserId);
             });
 
             builder.Entity<ExamAnswer>(entity =>
@@ -193,6 +205,8 @@ namespace PortalEstudos.API.Data
                       .WithMany()
                       .HasForeignKey(r => r.QuestionId)
                       .OnDelete(DeleteBehavior.NoAction);
+                // ⚡ Índice para queries de respostas por tentativa
+                entity.HasIndex(r => r.ExamAttemptId);
             });
 
             // ---- Seed: Documentos e Questões ----

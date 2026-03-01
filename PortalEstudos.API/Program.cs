@@ -116,6 +116,19 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddCustomRateLimiting(builder.Configuration);
 
+// ===== 5.1. Compressão HTTP (Gzip) ⚡ ===== 
+builder.Services.AddResponseCompression(options =>
+{
+    options.Providers.Add<Microsoft.AspNetCore.ResponseCompression.GzipCompressionProvider>();
+    options.Providers.Add<Microsoft.AspNetCore.ResponseCompression.BrotliCompressionProvider>();
+    options.MimeTypes = Microsoft.AspNetCore.ResponseCompression.ResponseCompressionDefaults.MimeTypes.Concat(
+        new[] { "application/json", "text/json", "text/plain", "application/xml" }).ToArray();
+    options.EnableForHttps = true;
+});
+
+// ===== 5.2. Cache de respostas ⚡ =====
+builder.Services.AddResponseCaching();
+
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
@@ -166,6 +179,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseForwardedHeaders();
+
+// ===== Compression + Response Caching ⚡ =====
+app.UseResponseCompression();
+app.UseResponseCaching();
 
 if (!app.Environment.IsDevelopment())
 {
