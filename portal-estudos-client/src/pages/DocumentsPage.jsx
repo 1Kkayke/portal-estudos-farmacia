@@ -97,8 +97,8 @@ export default function DocumentsPage() {
 
   // Reading view
   if (selectedDoc) {
-    const youtubeQuery = encodeURIComponent(`${selectedDoc.titulo} ${topic?.nome ?? ''} farmacia aula`);
-    const youtubeEmbed = `https://www.youtube.com/embed?listType=search&list=${youtubeQuery}`;
+    const youtubeQuery = encodeURIComponent(`${selectedDoc.titulo} ${topic?.nome ?? ''} farmacia`);
+    const youtubeSearchUrl = `https://www.youtube.com/results?search_query=${youtubeQuery}`;
     const pdfLink = resolveDocUrl(selectedDoc.pdfUrl || '');
     return (
       <div className="p-4 md:p-6 max-w-4xl mx-auto animate-fadeIn">
@@ -163,25 +163,25 @@ export default function DocumentsPage() {
         </div>
 
         <div className="bg-slate-800/40 rounded-xl border border-slate-700/50 p-4 md:p-6 mt-6">
-          <h2 className="text-lg font-semibold text-white mb-3">Videos relacionados</h2>
-          <div className="aspect-video rounded-xl overflow-hidden border border-slate-700/50">
-            <iframe
-              title="Videos relacionados"
-              src={youtubeEmbed}
-              className="w-full h-full"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
+          <h2 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+            <span>🎥</span> Vídeos Relacionados
+          </h2>
+          <div className="bg-slate-700/30 rounded-lg p-6 text-center border border-slate-600/50">
+            <p className="text-slate-300 mb-4">
+              Procure por vídeos sobre <strong>{selectedDoc.titulo}</strong> no YouTube
+            </p>
+            <a
+              href={youtubeSearchUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 active:bg-red-800 transition"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19.615 3.595A3 3 0 0 0 17 2H7a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V5a3 3 0 0 0-.385-1.405zM10.5 15V9l5 3-5 3z" />
+              </svg>
+              Buscar no YouTube
+            </a>
           </div>
-          <a
-            href={`https://www.youtube.com/results?search_query=${youtubeQuery}`}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 text-sm text-indigo-400 hover:text-indigo-300 mt-3"
-          >
-            Ver mais no YouTube
-            <ChevronRight className="w-4 h-4" />
-          </a>
         </div>
 
         {/* Navigation */}
