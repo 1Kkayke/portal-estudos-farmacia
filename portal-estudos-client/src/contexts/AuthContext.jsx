@@ -1,90 +1,123 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import api from '../services/api';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import api from '../services/api'
 
-/**
- * Context de autenticação.
- * Gerencia o estado do usuário logado e fornece funções de login/register/logout
- * para todos os componentes filhos via useAuth().
- */
-const AuthContext = createContext(null);
+const AuthContext = createContext(null)
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  // Ao carregar a aplicação, verifica se há um usuário salvo no localStorage
-  useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    const savedToken = localStorage.getItem('token');
-    if (savedUser && savedToken) {
-      setUser(JSON.parse(savedUser));
-    }
-    setLoading(false);
-  }, []);
-
-  /**
-   * Registra um novo usuário.
-   * Salva o token e dados do usuário no localStorage.
-   */
-  const register = async (nomeCompleto, email, password) => {
-    const response = await api.post('/auth/register', {
-      nomeCompleto,
-      email,
-      password,
-    });
-    const data = response.data;
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data));
-    setUser(data);
-    return data;
-  };
-
-  /**
-   * Faz login com email e senha.
-   * Salva o token e dados do usuário no localStorage.
-   */
-  const login = async (email, password) => {
-    const response = await api.post('/auth/login', { email, password });
-    const data = response.data;
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data));
-    setUser(data);
-    return data;
-  };
-
-  /**
-   * Faz logout, limpando o localStorage e resetando o estado.
-   */
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setUser(null);
-  };
-
-  /**
-   * Atualiza os dados do usuário logado.
-   */
-  const updateUser = (updatedData) => {
-    const newUser = { ...user, ...updatedData };
-    localStorage.setItem('user', JSON.stringify(newUser));
-    setUser(newUser);
-  };
-
-  return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, updateUser }}>
-      {children}
-    </AuthContext.Provider>
-  );
+const STORAGE_KEYS = {
+  TOKEN: 'token',
+  USER: 'user'
 }
 
-/**
- * Hook personalizado para acessar o contexto de autenticação.
- * Uso: const { user, login, logout } = useAuth();
- */
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth deve ser usado dentro de um AuthProvider');
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  const clearAuthData = useCallback(() => {
+    Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key))
+    setUser(null)
+  }, [])
+
+  const isTokenExpired = useCallback((token) => {
+    if (!token) return true
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]))
+      return payload.exp * 1000 < Date.now()
+    } catch {
+      return true
+    }
+  }, [])
+
+  const saveAuthData = useCallback((authData) => {
+    localStorage.setItem(STORAGE_KEYS.TOKEN, authData.token)
+    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(authData))
+    setUser(authData)
+  }, [])
+
+  useEffect(() => {
+    const initializeAuth = async () => {
+      try {
+        const savedUser = localStorage.getItem(STORAGE_KEYS.USER)
+        const savedToken = localStorage.getItem(STORAGE_KEYS.TOKEN)
+        
+        if (savedUser && savedToken && !isTokenExpired(savedToken)) {
+          setUser(JSON.parse(savedUser))
+        } else {
+          clearAuthData()
+        }
+      } catch (error) {
+        console.error('Erro ao inicializar autenticação:', error)
+        clearAuthData()
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    initializeAuth()
+  }, [clearAuthData, isTokenExpired])
+
+  const register = async (nomeCompleto, email, password) => {
+    try {
+      const response = await api.post('/auth/register', {
+        nomeCompleto,
+        email,
+        password,
+      })
+      
+      const authData = response.data
+      saveAuthData(authData)
+      return { success: true, data: authData }
+    } catch (error) {
+      const message = error.response?.data?.message || 'Erro ao registrar usuário'
+      return { success: false, error: message }
+    }
   }
-  return context;
+
+  const login = async (email, password) => {
+    try {
+      const response = await api.post('/auth/login', { email, password })
+      
+      const authData = response.data
+      saveAuthData(authData)
+      return { success: true, data: authData }
+    } catch (error) {
+      const message = error.response?.data?.message || 'Credenciais inválidas'
+      return { success: false, error: message }
+    }
+  }
+
+  const logout = useCallback(() => {
+    clearAuthData()
+  }, [clearAuthData])
+
+  const updateUser = useCallback((updatedData) => {
+    if (!user) return
+
+    const newUser = { ...user, ...updatedData }
+    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(newUser))
+    setUser(newUser)
+  }, [user])
+
+  const contextValue = {
+    user,
+    loading,
+    login,
+    register,
+    logout,
+    updateUser,
+    isAuthenticated: !!user
+  }
+
+  return (
+    <AuthContext.Provider value={contextValue}>
+      {children}
+    </AuthContext.Provider>
+  )
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext)
+  if (!context) {
+    throw new Error('useAuth deve ser usado dentro de um AuthProvider')
+  }
+  return context
 }

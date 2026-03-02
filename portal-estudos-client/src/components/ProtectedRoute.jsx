@@ -1,27 +1,27 @@
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { Navigate, useLocation } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 
-/**
- * Componente de rota protegida.
- * Redireciona para /login se o usuário não estiver autenticado.
- * Exibe um spinner enquanto o estado de autenticação está carregando.
- */
+const LoadingSpinner = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="flex flex-col items-center space-y-4">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+      <p className="text-sm text-gray-600">Verificando autenticação...</p>
+    </div>
+  </div>
+)
+
 export default function ProtectedRoute({ children }) {
-  const { user, loading } = useAuth();
+  const { user, loading } = useAuth()
+  const location = useLocation()
 
-  // Exibe um loading enquanto verifica o localStorage
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-      </div>
-    );
+    return <LoadingSpinner />
   }
 
-  // Se não há usuário logado, redireciona para login
   if (!user) {
-    return <Navigate to="/login" replace />;
+    // Preserva a rota tentada para redirecionamento após login
+    return <Navigate to="/login" state={{ from: location }} replace />
   }
 
-  return children;
+  return children
 }

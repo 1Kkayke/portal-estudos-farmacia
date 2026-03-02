@@ -7,31 +7,66 @@ using PortalEstudos.API.Services;
 
 namespace PortalEstudos.API.Controllers
 {
-    /// <summary>
-    /// Controller de autenticação: registro e login de usuários.
-    /// Retorna um token JWT válido para autenticar chamadas subsequentes.
-    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly TokenService _tokenService;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(UserManager<ApplicationUser> userManager, TokenService tokenService)
+        public AuthController(
+            UserManager<ApplicationUser> userManager, 
+            TokenService tokenService,
+            ILogger<AuthController> logger)
         {
             _userManager = userManager;
             _tokenService = tokenService;
+            _logger = logger;
         }
 
-        /// <summary>
-        /// POST /api/auth/register
-        /// Registra um novo estudante no sistema.
-        /// </summary>
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
-            // Cria o objeto de usuário com os dados fornecidos
+            try
+            {
+                var result = await ProcessUserRegistrationAsync(dto);
+                return result.IsSuccess 
+                    ? Ok(result.Data) 
+                    : BadRequest(result.Errors);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro durante registro do usuário: {Email}", dto.Email);
+                return StatusCode(500, "Erro interno do servidor");
+            }
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginDto dto)
+        {
+            try
+            {
+                var result = await ProcessUserLoginAsync(dto);
+                return result.IsSuccess 
+                    ? Ok(result.Data) 
+                    : Unauthorized("Credenciais inválidas");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro durante login do usuário: {Email}", dto.Email);
+                return StatusCode(500, "Erro interno do servidor");
+            }
+        }
+
+        private async Task<AuthResult> ProcessUserRegistrationAsync(RegisterDto dto)
+        {
+            var existingUser = await _userManager.FindByEmailAsync(dto.Email);
+            if (existingUser != null)
+            {
+                return AuthResult.Failure("Email já cadastrado no sistema");
+            }
+
             var user = new ApplicationUser
             {
                 UserName = dto.Email,
@@ -39,52 +74,43 @@ namespace PortalEstudos.API.Controllers
                 NomeCompleto = dto.NomeCompleto
             };
 
-            // Tenta criar o usuário com a senha informada
-            var result = await _userManager.CreateAsync(user, dto.Password);
-
-            if (!result.Succeeded)
+            var createResult = await _userManager.CreateAsync(user, dto.Password);
+            if (!createResult.Succeeded)
             {
-                // Retorna os erros de validação do Identity (senha fraca, email duplicado, etc.)
-                return BadRequest(result.Errors.Select(e => e.Description));
+                return AuthResult.Failure(createResult.Errors.Select(e => e.Description));
             }
 
-            // Gera o token JWT imediatamente após o registro
             var token = await _tokenService.GenerateToken(user);
+            var authResponse = CreateAuthResponse(user, token);
 
-            return Ok(new AuthResponseDto
-            {
-                Token = token,
-                Email = user.Email!,
-                NomeCompleto = user.NomeCompleto,
-                Expiration = DateTime.UtcNow.AddHours(24),
-                Telefone = user.Telefone,
-                DataNascimento = user.DataNascimento,
-                Bio = user.Bio,
-                FotoPerfilUrl = user.FotoPerfilUrl
-            });
+            _logger.LogInformation("Usuário registrado com sucesso: {Email}", dto.Email);
+            return AuthResult.Success(authResponse);
         }
 
-        /// <summary>
-        /// POST /api/auth/login
-        /// Autentica um estudante e retorna o token JWT.
-        /// </summary>
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto dto)
+        private async Task<AuthResult> ProcessUserLoginAsync(LoginDto dto)
         {
-            // Busca o usuário pelo email
             var user = await _userManager.FindByEmailAsync(dto.Email);
             if (user == null)
-                return Unauthorized("Credenciais inválidas.");
+            {
+                return AuthResult.Failure("Usuário não encontrado");
+            }
 
-            // Verifica a senha
-            var validPassword = await _userManager.CheckPasswordAsync(user, dto.Password);
-            if (!validPassword)
-                return Unauthorized("Credenciais inválidas.");
+            var isValidPassword = await _userManager.CheckPasswordAsync(user, dto.Password);
+            if (!isValidPassword)
+            {
+                return AuthResult.Failure("Senha inválida");
+            }
 
-            // Gera o token JWT
             var token = await _tokenService.GenerateToken(user);
+            var authResponse = CreateAuthResponse(user, token);
 
-            return Ok(new AuthResponseDto
+            _logger.LogInformation("Login realizado com sucesso: {Email}", dto.Email);
+            return AuthResult.Success(authResponse);
+        }
+
+        private static AuthResponseDto CreateAuthResponse(ApplicationUser user, string token)
+        {
+            return new AuthResponseDto
             {
                 Token = token,
                 Email = user.Email!,
@@ -94,7 +120,32 @@ namespace PortalEstudos.API.Controllers
                 DataNascimento = user.DataNascimento,
                 Bio = user.Bio,
                 FotoPerfilUrl = user.FotoPerfilUrl
-            });
+            };
+        }
+
+        private class AuthResult
+        {
+            public bool IsSuccess { get; private set; }
+            public AuthResponseDto? Data { get; private set; }
+            public IEnumerable<string> Errors { get; private set; } = Enumerable.Empty<string>();
+
+            public static AuthResult Success(AuthResponseDto data) => new()
+            {
+                IsSuccess = true,
+                Data = data
+            };
+
+            public static AuthResult Failure(string error) => new()
+            {
+                IsSuccess = false,
+                Errors = new[] { error }
+            };
+
+            public static AuthResult Failure(IEnumerable<string> errors) => new()
+            {
+                IsSuccess = false,
+                Errors = errors
+            };
         }
 
         /// <summary>
