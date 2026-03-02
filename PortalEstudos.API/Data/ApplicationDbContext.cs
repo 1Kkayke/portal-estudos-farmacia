@@ -42,6 +42,10 @@ namespace PortalEstudos.API.Data
         {
             base.OnModelCreating(builder);
 
+            // ===== CONFIGURAÇÃO DE NOMES EM PORTUGUÊS =====
+            ConfigureTableNames(builder);
+            ConfigureColumnNames(builder);
+
             // ---- Configuração do Topic ----
             builder.Entity<Topic>(entity =>
             {
@@ -217,6 +221,174 @@ namespace PortalEstudos.API.Data
             builder.Entity<QuestionOption>().HasData(
                 StudyContentSeeder.GetQuestionOptions().Select(o => new { o.Id, o.Texto, o.Indice, o.QuestionId }).ToArray()
             );
+        }
+
+        /// <summary>
+        /// Configura nomes de tabelas em português mais descritivos
+        /// </summary>
+        private static void ConfigureTableNames(ModelBuilder builder)
+        {
+            // Tabelas do Identity (ASP.NET Core)
+            builder.Entity<ApplicationUser>().ToTable("Usuarios");
+            builder.Entity<Microsoft.AspNetCore.Identity.IdentityRole>().ToTable("Perfis");
+            builder.Entity<Microsoft.AspNetCore.Identity.IdentityUserRole<string>>().ToTable("UsuarioPerfis");
+            builder.Entity<Microsoft.AspNetCore.Identity.IdentityUserClaim<string>>().ToTable("UsuarioClaims");
+            builder.Entity<Microsoft.AspNetCore.Identity.IdentityUserLogin<string>>().ToTable("UsuarioLogins");
+            builder.Entity<Microsoft.AspNetCore.Identity.IdentityUserToken<string>>().ToTable("UsuarioTokens");
+            builder.Entity<Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>>().ToTable("PerfilClaims");
+
+            // Tabelas da aplicação
+            builder.Entity<Topic>().ToTable("Disciplinas");
+            builder.Entity<Note>().ToTable("Anotacoes");
+            builder.Entity<Document>().ToTable("Documentos");
+            builder.Entity<Question>().ToTable("Questoes");
+            builder.Entity<QuestionOption>().ToTable("AlternativasQuestoes");
+            builder.Entity<Exam>().ToTable("Simulados");
+            builder.Entity<ExamAttempt>().ToTable("TentativasSimulado");
+            builder.Entity<ExamAnswer>().ToTable("RespostasSimulado");
+            builder.Entity<UserTopicInterest>().ToTable("InteressesDisciplina");
+            builder.Entity<UserTopicActivity>().ToTable("AtividadesDisciplina");
+        }
+
+        /// <summary>
+        /// Configura nomes de colunas em português mais descritivos
+        /// </summary>
+        private static void ConfigureColumnNames(ModelBuilder builder)
+        {
+            // ===== USUÁRIOS =====
+            builder.Entity<ApplicationUser>(entity =>
+            {
+                entity.Property(u => u.Id).HasColumnName("UsuarioId");
+                entity.Property(u => u.UserName).HasColumnName("NomeUsuario");
+                entity.Property(u => u.Email).HasColumnName("Email");
+                entity.Property(u => u.NormalizedEmail).HasColumnName("EmailNormalizado");
+                entity.Property(u => u.EmailConfirmed).HasColumnName("EmailConfirmado");
+                entity.Property(u => u.PasswordHash).HasColumnName("SenhaHash");
+                entity.Property(u => u.SecurityStamp).HasColumnName("CarimboSeguranca");
+                entity.Property(u => u.ConcurrencyStamp).HasColumnName("CarimboConcorrencia");
+                entity.Property(u => u.PhoneNumber).HasColumnName("Telefone");
+                entity.Property(u => u.PhoneNumberConfirmed).HasColumnName("TelefoneConfirmado");
+                entity.Property(u => u.TwoFactorEnabled).HasColumnName("DoisFatoresHabilitado");
+                entity.Property(u => u.LockoutEnd).HasColumnName("FimBloqueio");
+                entity.Property(u => u.LockoutEnabled).HasColumnName("BloqueioHabilitado");
+                entity.Property(u => u.AccessFailedCount).HasColumnName("TentativasFalhas");
+                entity.Property(u => u.NomeCompleto).HasColumnName("NomeCompleto");
+                entity.Property(u => u.DataCadastro).HasColumnName("DataCadastro");
+                entity.Property(u => u.DataNascimento).HasColumnName("DataNascimento");
+                entity.Property(u => u.Bio).HasColumnName("Biografia");
+                entity.Property(u => u.FotoPerfilUrl).HasColumnName("UrlFotoPerfil");
+            });
+
+            // ===== DISCIPLINAS =====
+            builder.Entity<Topic>(entity =>
+            {
+                entity.Property(t => t.Id).HasColumnName("DisciplinaId");
+                entity.Property(t => t.Nome).HasColumnName("NomeDisciplina");
+                entity.Property(t => t.Descricao).HasColumnName("DescricaoDisciplina");
+                entity.Property(t => t.Categoria).HasColumnName("CategoriaDisciplina");
+                entity.Property(t => t.Icone).HasColumnName("IconeDisciplina");
+                entity.Property(t => t.Cor).HasColumnName("CorDisciplina");
+            });
+
+            // ===== ANOTAÇÕES =====
+            builder.Entity<Note>(entity =>
+            {
+                entity.Property(n => n.Id).HasColumnName("AnotacaoId");
+                entity.Property(n => n.Titulo).HasColumnName("TituloAnotacao");
+                entity.Property(n => n.Conteudo).HasColumnName("ConteudoAnotacao");
+                entity.Property(n => n.DataCriacao).HasColumnName("DataCriacao");
+                entity.Property(n => n.DataAtualizacao).HasColumnName("DataAtualizacao");
+                entity.Property(n => n.UserId).HasColumnName("UsuarioId");
+                entity.Property(n => n.TopicId).HasColumnName("DisciplinaId");
+            });
+
+            // ===== DOCUMENTOS =====
+            builder.Entity<Document>(entity =>
+            {
+                entity.Property(d => d.Id).HasColumnName("DocumentoId");
+                entity.Property(d => d.Titulo).HasColumnName("TituloDocumento");
+                entity.Property(d => d.Resumo).HasColumnName("ResumoDocumento");
+                entity.Property(d => d.Conteudo).HasColumnName("ConteudoDocumento");
+                entity.Property(d => d.Ordem).HasColumnName("OrdemDocumento");
+                entity.Property(d => d.Dificuldade).HasColumnName("NivelDificuldade");
+                entity.Property(d => d.LeituraMinutos).HasColumnName("TempoLeituraMinutos");
+                entity.Property(d => d.TopicId).HasColumnName("DisciplinaId");
+            });
+
+            // ===== QUESTÕES =====
+            builder.Entity<Question>(entity =>
+            {
+                entity.Property(q => q.Id).HasColumnName("QuestaoId");
+                entity.Property(q => q.Enunciado).HasColumnName("EnunciadoQuestao");
+                entity.Property(q => q.Explicacao).HasColumnName("ExplicacaoQuestao");
+                entity.Property(q => q.RespostaCorreta).HasColumnName("RespostaCorreta");
+                entity.Property(q => q.Dificuldade).HasColumnName("NivelDificuldade");
+                entity.Property(q => q.Ordem).HasColumnName("OrdemQuestao");
+                entity.Property(q => q.TopicId).HasColumnName("DisciplinaId");
+            });
+
+            // ===== ALTERNATIVAS =====
+            builder.Entity<QuestionOption>(entity =>
+            {
+                entity.Property(o => o.Id).HasColumnName("AlternativaId");
+                entity.Property(o => o.Texto).HasColumnName("TextoAlternativa");
+                entity.Property(o => o.Indice).HasColumnName("IndiceAlternativa");
+                entity.Property(o => o.QuestionId).HasColumnName("QuestaoId");
+            });
+
+            // ===== SIMULADOS =====
+            builder.Entity<Exam>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("SimuladoId");
+                entity.Property(e => e.Titulo).HasColumnName("TituloSimulado");
+                entity.Property(e => e.TotalQuestoes).HasColumnName("QuantidadeQuestoes");
+                entity.Property(e => e.TempoMinutos).HasColumnName("DuracaoMinutos");
+                entity.Property(e => e.TopicId).HasColumnName("DisciplinaId");
+            });
+
+            // ===== TENTATIVAS SIMULADO =====
+            builder.Entity<ExamAttempt>(entity =>
+            {
+                entity.Property(a => a.Id).HasColumnName("TentativaId");
+                entity.Property(a => a.DataInicio).HasColumnName("DataInicio");
+                entity.Property(a => a.DataFim).HasColumnName("DataFim");
+                entity.Property(a => a.Nota).HasColumnName("NotaObtida");
+                entity.Property(a => a.Acertos).HasColumnName("QuantidadeAcertos");
+                entity.Property(a => a.Erros).HasColumnName("QuantidadeErros");
+                entity.Property(a => a.TotalQuestoes).HasColumnName("TotalQuestoes");
+                entity.Property(a => a.Finalizada).HasColumnName("ProvaFinalizada");
+                entity.Property(a => a.UserId).HasColumnName("UsuarioId");
+                entity.Property(a => a.TopicId).HasColumnName("DisciplinaId");
+            });
+
+            // ===== RESPOSTAS SIMULADO =====
+            builder.Entity<ExamAnswer>(entity =>
+            {
+                entity.Property(r => r.Id).HasColumnName("RespostaId");
+                entity.Property(r => r.RespostaEscolhida).HasColumnName("RespostaSelecionada");
+                entity.Property(r => r.Correta).HasColumnName("EstaCorreta");
+                entity.Property(r => r.ExamAttemptId).HasColumnName("TentativaId");
+                entity.Property(r => r.QuestionId).HasColumnName("QuestaoId");
+            });
+
+            // ===== INTERESSES =====
+            builder.Entity<UserTopicInterest>(entity =>
+            {
+                entity.Property(i => i.Id).HasColumnName("InteresseId");
+                entity.Property(i => i.DataMarcacao).HasColumnName("DataInteresse");
+                entity.Property(i => i.UserId).HasColumnName("UsuarioId");
+                entity.Property(i => i.TopicId).HasColumnName("DisciplinaId");
+            });
+
+            // ===== ATIVIDADES =====
+            builder.Entity<UserTopicActivity>(entity =>
+            {
+                entity.Property(a => a.Id).HasColumnName("AtividadeId");
+                entity.Property(a => a.UltimoAcesso).HasColumnName("DataUltimoAcesso");
+                entity.Property(a => a.TotalAcessos).HasColumnName("QuantidadeAcessos");
+                entity.Property(a => a.UserId).HasColumnName("UsuarioId");
+                entity.Property(a => a.TopicId).HasColumnName("DisciplinaId");
+            });
         }
     }
 }
